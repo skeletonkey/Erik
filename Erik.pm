@@ -458,6 +458,8 @@ sub import {
 		}
 	}
 
+	$_settings{_header_printed} = 0 unless $_settings{mode} eq 'text';
+
 	if ($_settings{log}) {
 		$_settings{mode}   = 'text';
 		$_settings{stderr} = 0;
