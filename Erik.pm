@@ -45,10 +45,15 @@ The header printed depends on what mode it is in:
 
 =over 4
 
-=item ERIK_DISABLE
+=item ERIK_OFF
 
 Same as passing 'off' when loading the module.  Found that sometimes it's easier
-to do this than find the right 'use Erik' and turn it off.
+to do this than find the right 'use Erik' and turn it off.  Also, turnOn/Off
+calls are honored.
+
+=item ERIK_DISABLE
+
+Totally disables Erik's print method so nothing will show up.
 
 =back
 
@@ -363,7 +368,7 @@ sub _noticable {
 } # END: _noticable
 
 sub _print {
-	return unless $_settings{state};
+	return unless $_settings{state} || $ENV{ERIK_DISABLE};
 
 	if ($_settings{_min_mode} && (caller(1))[3] ne 'Erik::min') {
 		$_settings{_min_mode} = 0;
@@ -479,7 +484,7 @@ sub import {
 
 	$_settings{_min_mode} = 0;
 
-	$_settings{state} = 0 if $ENV{ERIK_DISABLE};
+	$_settings{state} = 0 if $ENV{ERIK_OFF};
 } # END: import
 
 sub _html_friendly {
@@ -531,3 +536,5 @@ Version 1.9
 Version 1.10
 	Erik Tank - 2014/01/13 - added environmental variable ERIK_DISABLE
 
+Version 1.11
+	Erik Tank - 2014/01/13 - converted env var ERIK_DISABLE to ERIK_OFF and turned ERIK_DISABLE into a true disable.
