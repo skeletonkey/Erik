@@ -41,6 +41,17 @@ The header printed depends on what mode it is in:
 
 =back
 
+=head1 ENVIRONMENTAL VARIABLE
+
+=over 4
+
+=item ERIK_DISABLE
+
+Same as passing 'off' when loading the module.  Found that sometimes it's easier
+to do this than find the right 'use Erik' and turn it off.
+
+=back
+
 =head1 USAGE
 
  use Erik qw(off html);
@@ -467,6 +478,8 @@ sub import {
 	}
 
 	$_settings{_min_mode} = 0;
+
+	$_settings{state} = 0 if $ENV{ERIK_DISABLE};
 } # END: import
 
 sub _html_friendly {
@@ -512,5 +525,9 @@ Version 1.7
 Version 1.8
 	Erik Tank - 2013/01/09 - add min
 
-Version 1.8
+Version 1.9
 	Erik Tank - 2013/10/22 - updated dump to actually use Data::Dumper is LW code is not present
+
+Version 1.10
+	Erik Tank - 2014/01/13 - added environmental variable ERIK_DISABLE
+
