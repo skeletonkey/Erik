@@ -368,7 +368,7 @@ sub _noticable {
 } # END: _noticable
 
 sub _print {
-	return unless $_settings{state} || $ENV{ERIK_DISABLE};
+	return if $_settings{state} == 0 || $ENV{ERIK_DISABLE};
 
 	if ($_settings{_min_mode} && (caller(1))[3] ne 'Erik::min') {
 		$_settings{_min_mode} = 0;
