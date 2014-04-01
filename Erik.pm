@@ -167,7 +167,7 @@ This will print the information between two lines of '*****'s.
 
 =cut
 sub info {
-	_print(_header('*'x80), shift, _header('*'x80));
+	_print('*'x80, shift, '*'x80, "\n");
 }
 
 =head2 vars
@@ -538,3 +538,6 @@ Version 1.10
 
 Version 1.11
 	Erik Tank - 2014/01/13 - converted env var ERIK_DISABLE to ERIK_OFF and turned ERIK_DISABLE into a true disable.
+
+Version 1.12
+	Erik Tank - 2014/04/01 - Fix info method so that output looks like what I'm expecting.
