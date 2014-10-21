@@ -533,3 +533,6 @@ Version 1.11
 
 Version 1.12
 	Erik Tank - 2014/04/01 - Fix info method so that output looks like what I'm expecting.
+
+Version 1.13
+	Erik Tank - 2014/10/21 - Remove the use of LW::Util::Dumper
