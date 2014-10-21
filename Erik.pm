@@ -61,7 +61,7 @@ Totally disables Erik's print method so nothing will show up.
 
  use Erik qw(off html);
 
- Erik::dump('name', $ref_to_dump); # uses LW::Util::Dumper;
+ Erik::dump('name', $ref_to_dump); # uses Data::Dumper;
 
  Erik::info('Just something to display');
 
@@ -128,7 +128,7 @@ sub stackTrace {
 
 This will 'dump' the content of the variable reference that is passed.  The name is simply what is displayed above and below it.
 
-It will attempt to use LW::Util::Dumper if it is available, else it will use Data::Dumper.  If neither is installed then it just blows up.
+It will attempt to use Data::Dumper.  If it is not installed then it just blows up.
 
 =back
 
@@ -138,16 +138,8 @@ sub dump {
 	my $name = (keys(%$args))[0];
 	my $var = $args->{$name};
 
-	my $dump;
-
-	eval {
-		require LW::Util::Dumper;
-		$dump = LW::Util::Dumper::Dumper($var);
-	};
-	if ($@) {
-		require Data::Dumper;
-		$dump = Data::Dumper->Dump([$var]);
-	}
+    require Data::Dumper;
+    my $dump = Data::Dumper->Dump([$var]);
 
 	_print(_header($name) . $dump . _header("END: $name"));
 } # END: dump
