@@ -144,6 +144,38 @@ sub dump {
 	_print(_header($name) . $dump . _header("END: $name"));
 } # END: dump
 
+=head2 module_location
+
+=over 4
+
+=item Description
+
+
+ Erik::module_location();
+ Erik::module_location('carp');
+
+This will display a nice version of %INC.  If an arg is provided it will be
+used to filter for that string (case in-sensitive) in %INC's keys.
+
+=back
+
+=cut
+sub module_location {
+    my $search_arg = shift || '';
+
+    my $name = 'Module Location';
+	_print(_header($name));
+    my $found = 0;
+    KEY: foreach my $key (sort {uc($a) cmp uc($b)} keys %INC) {
+        next KEY if $search_arg && $key !~ /$search_arg/i;
+        _print($key . ' => ' . $INC{$key} . "\n");
+        $found = 1;
+    }
+    _print("Search arg ($search_arg) no found in \%INC\n") unless $found;
+	_print(_header("END: $name"));
+
+} # END: dump
+
 =head2 info
 
 =over 4
@@ -536,3 +568,6 @@ Version 1.12
 
 Version 1.13
 	Erik Tank - 2014/10/21 - Remove the use of LW::Util::Dumper
+
+Version 1.14
+	Erik Tank - 2014/10/27 - Added module_location sub
