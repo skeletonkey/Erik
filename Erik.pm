@@ -379,6 +379,37 @@ sub spacer {
 	}
 }
 
+=head2 print_file
+
+=over 4
+
+=item Description
+
+ Erik::print_file($filename);
+
+Print out the content of the file.
+
+=back
+
+=cut
+sub print_file {
+    my $filename = shift;
+    die("$filename does not exists") unless -e $filename;
+    die("$filename is not a file") unless -f $filename;
+
+    my $contents;
+    open(my $fh, '<', $filename) || die("Unable to open $filename for read: $!\n");
+    {
+        $/ = undef;
+        $contents = <$fh>;
+    }
+    close($fh);
+
+    _print(_header("BEGIN: $filename"));
+    _print($contents);
+    _print(_header("END: $filename"));
+}
+
 sub _isDefined {
 	my $var = shift;
 	$var = '[UNDEF]' unless defined($var);
@@ -575,3 +606,6 @@ Version 1.13
 
 Version 1.14
 	Erik Tank - 2014/10/27 - Added module_location sub
+
+Version 1.15
+	Erik Tank - 2015/01/20 - Added print_file sub
