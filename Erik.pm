@@ -33,7 +33,9 @@ The header printed depends on what mode it is in:
 
 =back
 
-=item log - print everything to a log file (/home/etank/erik.out)
+=item log - print everything to a log file (/home/erik/erik.out)
+
+This is hardcoded for ease of use.  To change this update the $log_filename variable.
 
 =item line - print line/program info before all non sanity outputs
 
@@ -80,13 +82,15 @@ my %_settings = (
 	state  => 1, # 1 - on, 0 - off, -1 - single command off
 	line   => 0, # 1 - auto print line/program info before most prints
 	stderr => 0, # 1 - print everything to STDERR else to STDOUT
-	log    => 0, # 1 - print evertyhing to ~/erik.out
+	log    => 0, # 1 - print evertyhing to /home/erik/erik.out
 	logger => 0, # 1 - send prints also to Log::Log4perl's logger
 	pid    => 0, # 1 - print the process id and order id
 
   _header_printed => 1, # since only printed once a value of 0 means print
 	_logger         => undef, # only get the Log::Log4perl's logger once
 );
+
+my $log_filename = '/home/erik/erik.out';
 
 =head1 METHODS
 
@@ -404,7 +408,7 @@ sub _print {
   		print(STDERR _get_header());
 		}
 		elsif ($_settings{log}) {
-			open(LOG, ">>/home/etank/erik.out") || die("Can't open file (/home/etank/erik.out): $!\n");
+			open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
 			print(LOG _get_header());
 			close(LOG);
 		}
@@ -441,7 +445,7 @@ sub _print {
 			print(STDERR $output);
 		}
 		elsif ($_settings{log}) {
-			open(LOG, ">>/home/etank/erik.out") || die("Can't open file (/home/etank/erik.out): $!\n");
+			open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
 			print(LOG $output);
 			close(LOG);
 		}
