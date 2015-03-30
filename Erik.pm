@@ -37,7 +37,13 @@ The header printed depends on what mode it is in:
 
 This is hardcoded for ease of use.  To change this update the $log_filename variable.
 
+This will also force the mode into text.  Passing 'html' will not work - it'll be ignored.
+
+=item logger - use Log::Log4perl to write all information as 'debug'
+
 =item line - print line/program info before all non sanity outputs
+
+=item pid - print Process ID to each line
 
 =item stderr - print everything to STDERR instead of STDOUT
 
@@ -302,7 +308,7 @@ sub min {
 
  Erik::toggle();
 
-Toggles the on/off state of the debugger.  If it's off nothing gets printed.
+Toggles the enable/disable state of the debugger.  If it's off nothing gets printed.
 
 =back
 
