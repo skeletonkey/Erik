@@ -135,21 +135,30 @@ sub stackTrace {
 
  Erik::dump('name', $ref_to_dump);
  Erik::dump(name => $ref_to_dump);
+ Erik::dump(name => $ref_to_dump, maxdepth => 3);
+ Erik::dump(name => $ref_to_dump, 3);
 
 This will 'dump' the content of the variable reference that is passed.  The name is simply what is displayed above and below it.
 
 It will attempt to use Data::Dumper.  If it is not installed then it just blows up.
 
+maxdepth (or a simple number as the 3rd arg) will limit the depth of the dump.  (Used to set $Data::Dumper::Maxdepth)  No argument or 0 assumes unlimited.
+
 =back
 
 =cut
 sub dump {
-	my $args = _prep_args(@_);
-	my $name = (keys(%$args))[0];
-	my $var = $args->{$name};
+	my $name            = shift;
+	my $var             = shift;
+    my $max_depth_label = shift;
+    my $max_depth       = shift;
+
+    $max_depth = $max_depth_label if $max_depth_label =~ /^\d+$/;
 
     require Data::Dumper;
+    $Data::Dumper::Maxdepth = $max_depth if $max_depth;
     my $dump = Data::Dumper->Dump([$var]);
+    $Data::Dumper::Maxdepth = 0          if $max_depth;
 
 	_print(_header($name) . $dump . _header("END: $name"));
 } # END: dump
@@ -615,3 +624,6 @@ Version 1.14
 
 Version 1.15
 	Erik Tank - 2015/01/20 - Added print_file sub
+
+Version 1.16
+    Erik Tank - 2016/03/30 - All to set depth for dump
