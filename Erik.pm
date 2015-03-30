@@ -50,7 +50,7 @@ This is hardcoded for ease of use.  To change this update the $log_filename vari
 =item ERIK_OFF
 
 Same as passing 'off' when loading the module.  Found that sometimes it's easier
-to do this than find the right 'use Erik' and turn it off.  Also, turnOn/Off
+to do this than find the right 'use Erik' and turn it off.  Also, enable/disable
 calls are honored.
 
 =item ERIK_DISABLE
@@ -309,35 +309,35 @@ Toggles the on/off state of the debugger.  If it's off nothing gets printed.
 =cut
 sub toggle { $_settings{state} = !$_settings{state}; } # END: toggle
 
-=head2 turnOff
+=head2 disable
 
 =over 4
 
 =item Description
 
- Erik::turnOff();
+ Erik::disable();
 
 Turn off state of the debugger.
 
 =back
 
 =cut
-sub turnOff { $_settings{state} = 0; } # END: turnOff
+sub disable { $_settings{state} = 0; } # END: disable
 
-=head2 turnOn
+=head2 enable
 
 =over 4
 
 =item Description
 
- Erik::turnOn();
+ Erik::enable();
 
 Toggles the on state of the debugger.
 
 =back
 
 =cut
-sub turnOn  { $_settings{state} = 1; } # END: turnOn
+sub enable  { $_settings{state} = 1; } # END: enable
 
 =head2 single_off
 
