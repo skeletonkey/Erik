@@ -148,15 +148,15 @@ sub dump {
 	_print(_header($name) . $dump . _header("END: $name"));
 } # END: dump
 
-=head2 module_location
+=head2 moduleLocation
 
 =over 4
 
 =item Description
 
 
- Erik::module_location();
- Erik::module_location('carp');
+ Erik::moduleLocation();
+ Erik::moduleLocation('carp');
 
 This will display a nice version of %INC.  If an arg is provided it will be
 used to filter for that string (case in-sensitive) in %INC's keys.
@@ -164,7 +164,7 @@ used to filter for that string (case in-sensitive) in %INC's keys.
 =back
 
 =cut
-sub module_location {
+sub moduleLocation {
     my $search_arg = shift || '';
 
     my $name = 'Module Location';
@@ -339,20 +339,20 @@ Toggles the on state of the debugger.
 =cut
 sub enable  { $_settings{state} = 1; } # END: enable
 
-=head2 single_off
+=head2 singleOff
 
 =over 4
 
 =item Description
 
- Erik::single_off();
+ Erik::singleOff();
 
 Turns off debugging for the next command then it's turned back on again.  If debugging is off already then it does nothing.
 
 =back
 
 =cut
-sub single_off { $_settings{state} = -1 if $_settings{state}; } # END: toggle
+sub singleOff { $_settings{state} = -1 if $_settings{state}; } # END: toggle
 
 =head2 spacer
 
@@ -379,20 +379,20 @@ sub spacer {
 	}
 }
 
-=head2 print_file
+=head2 printFile
 
 =over 4
 
 =item Description
 
- Erik::print_file($filename);
+ Erik::printFile($filename);
 
 Print out the content of the file.
 
 =back
 
 =cut
-sub print_file {
+sub printFile {
     my $filename = shift;
     die("$filename does not exists") unless -e $filename;
     die("$filename is not a file") unless -f $filename;
