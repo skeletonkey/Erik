@@ -8,6 +8,14 @@ use warnings;
 use Erik;
 use CGI;
 
+my $tmp_file = '/tmp/Erik.txt';
+if (!-e $tmp_file) {
+    open(my $fh, '>', $tmp_file)
+        || die("Unable to open file ($tmp_file) for write: $!\n");
+    print $fh "This is Erik.txt!!!!\n";
+    close($fh);
+}
+
 my $cgi = CGI->new();
 $cgi->param('cgi', $cgi);
 my $x = 'XX';
@@ -26,6 +34,27 @@ Erik::sanity("This should not be printed");
 Erik::enable;
 Erik::sanity("You should see this now");
 
+second::testing();
+yans::yam();
+
+Erik::enable('second');
+second::testing();
+yans::yam();
+Erik::sanity("Shouldn't see main sanity");
+Erik::enable();
+Erik::sanity("Should have only seen second::testing above");
+Erik::disable('second');
+second::testing();
+yans::yam();
+Erik::enable();
+Erik::sanity("Should have only seen yans::yam above");
+Erik::disable('second', 'yans');
+second::testing();
+yans::yam();
+Erik::sanity("Should only see this sanity line");
+Erik::enable();
+
+
 
 Erik::info("This is what info looks like");
 
@@ -35,11 +64,10 @@ Erik::vars(cgi => $cgi, x => $x);
 Erik::min($_) for 1..10;
 Erik::sanity("1 though 10 should be on the previous line");
 
-
 Erik::moduleLocation();
 Erik::moduleLocation('Erik');
 
-Erik::printFile('test.pm');
+Erik::printFile($tmp_file);
 
 Erik::singleOff();
 Erik::sanity("This should not be printed");
@@ -65,4 +93,18 @@ sub stackTrace {
 }
 sub _stackTrace {
     Erik::stackTrace;
+}
+
+package second;
+
+sub testing {
+    Erik::subroutine;
+    Erik::sanity("This is in another name space");
+}
+
+package yans;
+
+sub yam {
+    Erik::subroutine;
+    Erik::sanity("This is yet another method in yet another name space");
 }
