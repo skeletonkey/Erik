@@ -96,7 +96,8 @@ my %_settings = (
 	_logger         => undef, # only get the Log::Log4perl's logger once
 );
 
-my $log_filename = '/home/erik/erik.out';
+my $log_filename       = '/home/erik/erik.out';
+my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
 
 =head1 METHODS
 
@@ -331,13 +332,27 @@ sub toggle { $_settings{state} = !$_settings{state}; } # END: toggle
 =item Description
 
  Erik::disable();
+ Erik::disable('Module::Name::A', 'Module::Name::B');
 
 Turn off state of the debugger.
+
+If a list of modules name(s) is provided then only disable debugging in those. Calling it again without a list will disable debugging everywhere.
 
 =back
 
 =cut
-sub disable { $_settings{state} = 0; } # END: disable
+sub disable {
+    my @modules = @_;
+
+    if (@modules) {
+        %class_restrictions = ( disable => \@modules );
+    }
+    else {
+        %class_restrictions = ( none    => 1         );
+    }
+
+    $_settings{state} = 0;
+}
 
 =head2 enable
 
@@ -346,13 +361,27 @@ sub disable { $_settings{state} = 0; } # END: disable
 =item Description
 
  Erik::enable();
+ Erik::enable('Module::Name::A', 'Module::Name::B');
 
 Toggles the on state of the debugger.
+
+If a list of modules name(s) is provided then only enable debugging in those. Calling it again without a list will enable debugging everywhere.
 
 =back
 
 =cut
-sub enable  { $_settings{state} = 1; } # END: enable
+sub enable  {
+    my @modules = @_;
+
+    if (@modules) {
+        %class_restrictions = ( enable => \@modules );
+    }
+    else {
+        %class_restrictions = ( none   => 1         );
+    }
+
+    $_settings{state} = 1;
+}
 
 =head2 singleOff
 
@@ -441,8 +470,38 @@ sub _noticable {
 	return '*'x3 . " $string " . '*'x(75 - length($string)) . "\n";
 } # END: _noticable
 
+sub _im_disabled {
+    my $disabled = 1;
+
+    if (exists $class_restrictions{none}) {
+        if ($_settings{state} == 1) {
+            $disabled = 0;
+        }
+        elsif ($_settings{state} == -1) {
+		    $_settings{state} = 1;
+        }
+    }
+    else {
+        my $calling_namespace = '';
+        my $level = 1;
+        CALLER: while (my @data = caller($level++)) {
+            next CALLER if $data[0] eq 'Erik';
+            $calling_namespace = $data[0];
+            last CALLER;
+        }
+        if (exists $class_restrictions{disable}) {
+            $disabled = 0 unless grep { $calling_namespace eq $_ } @{$class_restrictions{disable}};
+        }
+        else {
+            $disabled = 0 if grep { $calling_namespace eq $_ } @{$class_restrictions{enable}};
+        }
+    }
+
+    return $disabled;
+}
+
 sub _print {
-	return if $_settings{state} == 0 || $ENV{ERIK_DISABLE};
+	return if _im_disabled() || $ENV{ERIK_DISABLE};
 
 	if ($_settings{_min_mode} && (caller(1))[3] ne 'Erik::min') {
 		$_settings{_min_mode} = 0;
@@ -464,41 +523,36 @@ sub _print {
 		$_settings{_header_printed} = 1;
 	}
 
-	if ($_settings{state} == -1) {
-		$_settings{state} = 1;
-	}
-	else {
-		my $output = join("\n", @_);
+    my $output = join("\n", @_);
 
-		if ($_settings{line} && (caller(1))[3] ne 'Erik::sanity') {
-			my @data = caller(1);
-			$output = _header("$data[1] [$data[2]]") . $output;
-		}
+    if ($_settings{line} && (caller(1))[3] ne 'Erik::sanity') {
+        my @data = caller(1);
+        $output = _header("$data[1] [$data[2]]") . $output;
+    }
 
-		if ($_settings{pid}) {
-			$output = "[$$." . ++$_settings{pid_counters}{$$} . '] ' . $output;
-		}
+    if ($_settings{pid}) {
+        $output = "[$$." . ++$_settings{pid_counters}{$$} . '] ' . $output;
+    }
 
-		$output = _html_friendly($output) if $_settings{mode} eq 'html';
+    $output = _html_friendly($output) if $_settings{mode} eq 'html';
 
-		if ($_settings{logger}) {
-			$_settings{_logger} ||= Log::Log4perl->get_logger;
+    if ($_settings{logger}) {
+        $_settings{_logger} ||= Log::Log4perl->get_logger;
 
-			$_settings{_logger}->debug($output);
-		}
+        $_settings{_logger}->debug($output);
+    }
 
-		if ($_settings{stderr}) {
-			print(STDERR $output);
-		}
-		elsif ($_settings{log}) {
-			open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
-			print(LOG $output);
-			close(LOG);
-		}
-		else {
-			print($output);
-		}
-	}
+    if ($_settings{stderr}) {
+        print(STDERR $output);
+    }
+    elsif ($_settings{log}) {
+        open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
+        print(LOG $output);
+        close(LOG);
+    }
+    else {
+        print($output);
+    }
 } # END: _print
 
 sub _get_header {
@@ -627,3 +681,6 @@ Version 1.15
 
 Version 1.16
     Erik Tank - 2016/03/30 - All to set depth for dump
+
+Version 1.17
+    Erik Tank - 2016/04/06 - Added ability to enable/disable Erik in certain namespaces
