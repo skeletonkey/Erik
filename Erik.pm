@@ -283,6 +283,21 @@ sub subroutine {
 	_print(_header($string));
 }
 
+=head2 method
+
+=over 4
+
+=item Description
+
+ Erik::method();
+
+ An alias for Erik::subroutine(). See subroutine documentation above.
+
+=back
+
+=cut
+sub method { goto &subroutine; }
+
 =head2 min
 
 =over 4
@@ -684,3 +699,6 @@ Version 1.16
 
 Version 1.17
     Erik Tank - 2016/04/06 - Added ability to enable/disable Erik in certain namespaces
+
+Version 1.18
+    Erik Tank - 2016/04/15 - Add method()

@@ -86,6 +86,7 @@ Erik::sanity("Toggled around and around - btw you should see this");
 
 sub my_sub {
     Erik::subroutine;
+    Erik::method;
 }
 
 sub stackTrace {
