@@ -125,7 +125,7 @@ sub stackTrace {
 	}
 	$output .= _header('end of stack trace') if $level > 2;
 	_print($output);
-} # END: stackTrace
+}
 
 =head2 dump
 
@@ -162,7 +162,7 @@ sub dump {
     $Data::Dumper::Maxdepth = 0          if $max_depth;
 
 	_print(_header($name) . $dump . _header("END: $name"));
-} # END: dump
+}
 
 =head2 moduleLocation
 
@@ -194,7 +194,7 @@ sub moduleLocation {
     _print("Search arg ($search_arg) no found in \%INC\n") unless $found;
 	_print(_header("END: $name"));
 
-} # END: dump
+}
 
 =head2 info
 
@@ -235,7 +235,7 @@ sub vars {
 	my @data = caller;
 	_print(_noticable(" $data[2] - "
 		. join("\t", map({"$_: " . _isDefined($args->{$_})} sort {$a cmp $b} keys %$args))));
-} # END: vars
+}
 
 =head2 sanity
 
@@ -256,7 +256,7 @@ sub sanity {
 	my $string = shift;
 	my @data = caller;
 	_print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
-} # END: sanity
+}
 
 =head2 subroutine
 
@@ -281,7 +281,7 @@ sub subroutine {
 	$string .= $subroutine;
 	
 	_print(_header($string));
-} # END: sanity
+}
 
 =head2 min
 
@@ -308,7 +308,7 @@ sub min {
 	}
 
 	_print($string);
-} # END: min
+}
 
 =head2 toggle
 
@@ -323,7 +323,7 @@ Toggles the enable/disable state of the debugger.  If it's off nothing gets prin
 =back
 
 =cut
-sub toggle { $_settings{state} = !$_settings{state}; } # END: toggle
+sub toggle { $_settings{state} = !$_settings{state}; }
 
 =head2 disable
 
@@ -396,7 +396,7 @@ Turns off debugging for the next command then it's turned back on again.  If deb
 =back
 
 =cut
-sub singleOff { $_settings{state} = -1 if $_settings{state}; } # END: toggle
+sub singleOff { $_settings{state} = -1 if $_settings{state}; }
 
 =head2 spacer
 
@@ -458,17 +458,17 @@ sub _isDefined {
 	my $var = shift;
 	$var = '[UNDEF]' unless defined($var);
 	return $var;
-} # END: _isDefined
+}
 
 sub _header {
 	return _noticable(shift);
-} # END: _header
+}
 
 sub _noticable {
 	my $string = shift || return 'nothing passed';
 
 	return '*'x3 . " $string " . '*'x(75 - length($string)) . "\n";
-} # END: _noticable
+}
 
 sub _im_disabled {
     my $disabled = 1;
@@ -553,7 +553,7 @@ sub _print {
     else {
         print($output);
     }
-} # END: _print
+}
 
 sub _get_header {
   if ($_settings{mode} eq 'text') {
@@ -574,11 +574,11 @@ sub _get_header {
   else {
     die("Unsupported mode type: $_settings{mode}\n");
   }
-} # END: _get_header
+}
 
 sub _prep_args {
 	return UNIVERSAL::isa($_[0], 'HASH') ? $_[0] : { @_ };
-} # END: _prep_args
+}
 
 sub import {
 	shift;
@@ -613,7 +613,7 @@ sub import {
 	$_settings{_min_mode} = 0;
 
 	$_settings{state} = 0 if $ENV{ERIK_OFF};
-} # END: import
+}
 
 sub _html_friendly {
 	my $string = shift || return '';
@@ -625,7 +625,7 @@ sub _html_friendly {
 	$string =~ s/\n/<BR>/g;
 
 	return $string;
-} # END: _html_friendly
+}
 
 1;
 
