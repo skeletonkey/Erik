@@ -96,7 +96,7 @@ my %_settings = (
 	_logger         => undef, # only get the Log::Log4perl's logger once
 );
 
-my $log_filename       = '/home/erik/erik.out';
+my $log_filename       = '/tmp/erik.out';
 my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
 
 =head1 METHODS
