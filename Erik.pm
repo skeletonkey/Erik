@@ -729,13 +729,13 @@ Version 1.15
 	Erik Tank - 2015/01/20 - Added print_file sub
 
 Version 1.16
-    Erik Tank - 2016/03/30 - All to set depth for dump
+    Erik Tank - 2015/03/30 - All to set depth for dump
 
 Version 1.17
-    Erik Tank - 2016/04/06 - Added ability to enable/disable Erik in certain namespaces
+    Erik Tank - 2015/04/06 - Added ability to enable/disable Erik in certain namespaces
 
 Version 1.18
-    Erik Tank - 2016/04/15 - Add method()
+    Erik Tank - 2015/04/15 - Add method()
 
 Version 1.19
     Erik Tank - 2015/05/13 - Add info() and log()
