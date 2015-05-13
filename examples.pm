@@ -22,6 +22,8 @@ my $x = 'XX';
 
 Erik::sanity();
 Erik::sanity('This is a sanity line');
+Erik::info('This is a info line');
+Erik::log('This is a log line');
 my_sub();
 
 Erik::dump(cgi => $cgi);

@@ -258,6 +258,36 @@ sub sanity {
 	_print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
 }
 
+=head2 info
+
+=over 4
+
+=item Description
+
+ Erik::info();
+
+ An alias for Erik::sanity(). See sanity documentation above.
+
+=back
+
+=cut
+sub info { goto &sanity; }
+
+=head2 log
+
+=over 4
+
+=item Description
+
+ Erik::log();
+
+ An alias for Erik::sanity(). See sanity documentation above.
+
+=back
+
+=cut
+sub log { goto &sanity; }
+
 =head2 subroutine
 
 =over 4
@@ -702,3 +732,6 @@ Version 1.17
 
 Version 1.18
     Erik Tank - 2016/04/15 - Add method()
+
+Version 1.19
+    Erik Tank - 2015/05/13 - Add info() and log()
