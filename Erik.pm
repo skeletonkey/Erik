@@ -99,6 +99,10 @@ my %_settings = (
 my $log_filename       = '/tmp/erik.out';
 my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
 
+END {
+	print("\n") if $_settings{_min_mode};
+}
+
 =head1 METHODS
 
 =head2 stackTrace
@@ -735,3 +739,6 @@ Version 1.18
 
 Version 1.19
     Erik Tank - 2015/05/13 - Add info() and log()
+
+Version 1.20
+    Erik Tank - 2015/05/13 - If the last command was a min() command print and \n when script ends

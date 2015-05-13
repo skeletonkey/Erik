@@ -86,6 +86,9 @@ Erik::sanity("You should NOT be seeing this or the second stack trace");
 Erik::toggle;
 Erik::sanity("Toggled around and around - btw you should see this");
 
+Erik::min('Good-bye');
+Erik::min("this is min and the command prompt should be on the next line");
+
 sub my_sub {
     Erik::subroutine;
     Erik::method;
