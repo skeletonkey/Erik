@@ -84,23 +84,23 @@ Totally disables Erik's print method so nothing will show up.
 =cut
 
 my %_settings = (
-	mode   => 0, # text|html
-	state  => 1, # 1 - on, 0 - off, -1 - single command off
-	line   => 0, # 1 - auto print line/program info before most prints
-	stderr => 0, # 1 - print everything to STDERR else to STDOUT
-	log    => 0, # 1 - print evertyhing to /home/erik/erik.out
-	logger => 0, # 1 - send prints also to Log::Log4perl's logger
-	pid    => 0, # 1 - print the process id and order id
+  mode   => 0, # text|html
+  state  => 1, # 1 - on, 0 - off, -1 - single command off
+  line   => 0, # 1 - auto print line/program info before most prints
+  stderr => 0, # 1 - print everything to STDERR else to STDOUT
+  log    => 0, # 1 - print evertyhing to /home/erik/erik.out
+  logger => 0, # 1 - send prints also to Log::Log4perl's logger
+  pid    => 0, # 1 - print the process id and order id
 
   _header_printed => 1, # since only printed once a value of 0 means print
-	_logger         => undef, # only get the Log::Log4perl's logger once
+  _logger         => undef, # only get the Log::Log4perl's logger once
 );
 
 my $log_filename       = '/tmp/erik.out';
 my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
 
 END {
-	print("\n") if $_settings{_min_mode};
+  print("\n") if $_settings{_min_mode};
 }
 
 =head1 METHODS
@@ -113,22 +113,22 @@ END {
 
  Erik::stackTrace();
 
-Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop.
+Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop.  [This is not true.  I'll need to investigate what I've done here to update this comment correctly.]
 
 =back
 
 =cut
 my %stackTraceLimit = ();
 sub stackTrace {
-	my $level = 1;
-	my $output = '';
-	CALLER: while (my @data = caller($level++)) {
-		last CALLER if $stackTraceLimit{$data[3]}++ > 20;
-		$output .= _header('stack trace') if $level == 2;
-		$output .= 'Level ' . ($level - 1) . ': ' . join(' - ', @data[0..3]) . "\n";
-	}
-	$output .= _header('end of stack trace') if $level > 2;
-	_print($output);
+  my $level = 1;
+  my $output = '';
+  CALLER: while (my @data = caller($level++)) {
+    last CALLER if $stackTraceLimit{$data[3]}++ > 20;
+    $output .= _header('stack trace') if $level == 2;
+    $output .= 'Level ' . ($level - 1) . ': ' . join(' - ', @data[0..3]) . "\n";
+  }
+  $output .= _header('end of stack trace') if $level > 2;
+  _print($output);
 }
 
 =head2 dump
@@ -153,8 +153,8 @@ maxdepth (or a simple number as the 3rd arg) will limit the depth of the dump.  
 
 =cut
 sub dump {
-	my $name            = shift;
-	my $var             = shift;
+  my $name            = shift;
+  my $var             = shift;
     my $max_depth_label = shift;
     my $max_depth       = shift;
 
@@ -165,7 +165,7 @@ sub dump {
     my $dump = Data::Dumper->Dump([$var]);
     $Data::Dumper::Maxdepth = 0          if $max_depth;
 
-	_print(_header($name) . $dump . _header("END: $name"));
+  _print(_header($name) . $dump . _header("END: $name"));
 }
 
 =head2 moduleLocation
@@ -188,7 +188,7 @@ sub moduleLocation {
     my $search_arg = shift || '';
 
     my $name = 'Module Location';
-	_print(_header($name));
+  _print(_header($name));
     my $found = 0;
     KEY: foreach my $key (sort {uc($a) cmp uc($b)} keys %INC) {
         next KEY if $search_arg && $key !~ /$search_arg/i;
@@ -196,7 +196,7 @@ sub moduleLocation {
         $found = 1;
     }
     _print("Search arg ($search_arg) no found in \%INC\n") unless $found;
-	_print(_header("END: $name"));
+  _print(_header("END: $name"));
 
 }
 
@@ -215,7 +215,7 @@ This will print the information between two lines of '*****'s.
 
 =cut
 sub info {
-	_print('*'x80, shift, '*'x80, "\n");
+  _print('*'x80, shift, '*'x80, "\n");
 }
 
 =head2 vars
@@ -234,11 +234,11 @@ Print out the line number and then name/value seperated by ':' if more than one 
 
 =cut
 sub vars {
-	my $args = _prep_args(@_);
+  my $args = _prep_args(@_);
 
-	my @data = caller;
-	_print(_noticable(" $data[2] - "
-		. join("\t", map({"$_: " . _isDefined($args->{$_})} sort {$a cmp $b} keys %$args))));
+  my @data = caller;
+  _print(_noticable(" $data[2] - "
+    . join("\t", map({"$_: " . _isDefined($args->{$_})} sort {$a cmp $b} keys %$args))));
 }
 
 =head2 sanity
@@ -257,9 +257,9 @@ Simply print a line with the following format:
 
 =cut
 sub sanity {
-	my $string = shift;
-	my @data = caller;
-	_print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
+  my $string = shift;
+  my @data = caller;
+  _print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
 }
 
 =head2 info
@@ -307,14 +307,14 @@ Simply print a line with the following format:
 
 =cut
 sub subroutine {
-	my @data = caller;
-	my $string = "$data[1] [$data[2]]: ";
+  my @data = caller;
+  my $string = "$data[1] [$data[2]]: ";
 
-	@data = caller 1;
-	my ($subroutine) = $data[3] =~ /([^:]+)$/;
-	$string .= $subroutine;
-	
-	_print(_header($string));
+  @data = caller 1;
+  my ($subroutine) = $data[3] =~ /([^:]+)$/;
+  $string .= $subroutine;
+  
+  _print(_header($string));
 }
 
 =head2 method
@@ -347,16 +347,16 @@ burn through the scrollback buffer.
 
 =cut
 sub min {
-	my $string = shift;
+  my $string = shift;
 
-	if ($_settings{_min_mode}) {
-		$string = ", $string";
-	}
-	else {
-		$_settings{_min_mode} = 1;
-	}
+  if ($_settings{_min_mode}) {
+    $string = ", $string";
+  }
+  else {
+    $_settings{_min_mode} = 1;
+  }
 
-	_print($string);
+  _print($string);
 }
 
 =head2 toggle
@@ -462,14 +462,14 @@ Enter 1 or more new lines to help break up the output
 
 =cut
 sub spacer {
-	my $count = shift || 1;
+  my $count = shift || 1;
 
-	{
-		$_settings{line} = 0;
-		$_settings{pid} = 0;
+  {
+    $_settings{line} = 0;
+    $_settings{pid} = 0;
 
-		_print("\n" x $count);
-	}
+    _print("\n" x $count);
+  }
 }
 
 =head2 printFile
@@ -504,19 +504,19 @@ sub printFile {
 }
 
 sub _isDefined {
-	my $var = shift;
-	$var = '[UNDEF]' unless defined($var);
-	return $var;
+  my $var = shift;
+  $var = '[UNDEF]' unless defined($var);
+  return $var;
 }
 
 sub _header {
-	return _noticable(shift);
+  return _noticable(shift);
 }
 
 sub _noticable {
-	my $string = shift || return 'nothing passed';
+  my $string = shift || return 'nothing passed';
 
-	return '*'x3 . " $string " . '*'x(75 - length($string)) . "\n";
+  return '*'x3 . " $string " . '*'x(75 - length($string)) . "\n";
 }
 
 sub _im_disabled {
@@ -527,7 +527,7 @@ sub _im_disabled {
             $disabled = 0;
         }
         elsif ($_settings{state} == -1) {
-		    $_settings{state} = 1;
+        $_settings{state} = 1;
         }
     }
     else {
@@ -550,27 +550,27 @@ sub _im_disabled {
 }
 
 sub _print {
-	return if _im_disabled() || $ENV{ERIK_DISABLE};
+  return if _im_disabled() || $ENV{ERIK_DISABLE};
 
-	if ($_settings{_min_mode} && (caller(1))[3] ne 'Erik::min') {
-		$_settings{_min_mode} = 0;
-		_print("\n");
-	}
+  if ($_settings{_min_mode} && (caller(1))[3] ne 'Erik::min') {
+    $_settings{_min_mode} = 0;
+    _print("\n");
+  }
 
-	if (!$_settings{_header_printed}) {
-		if ($_settings{stderr}) {
-  		print(STDERR _get_header());
-		}
-		elsif ($_settings{log}) {
-			open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
-			print(LOG _get_header());
-			close(LOG);
-		}
-		else {
-  		print(_get_header());
-		}
-		$_settings{_header_printed} = 1;
-	}
+  if (!$_settings{_header_printed}) {
+    if ($_settings{stderr}) {
+      print(STDERR _get_header());
+    }
+    elsif ($_settings{log}) {
+      open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
+      print(LOG _get_header());
+      close(LOG);
+    }
+    else {
+      print(_get_header());
+    }
+    $_settings{_header_printed} = 1;
+  }
 
     my $output = join("\n", @_);
 
@@ -606,16 +606,16 @@ sub _print {
 
 sub _get_header {
   if ($_settings{mode} eq 'text') {
-		if ($_settings{log}) {
-			my $header = ' ' . scalar(localtime()) . ' - NEW LOG START ';
-    	return "\n" x 2
-				. '=' x 80 . "\n"
-				. '=' x 3 . $header . '=' x (77 - length($header)) . "\n"
-				. '=' x 80 . "\n";
-		}
-		else {
-    	return "Content-type: text/plain\n\n";
-		}
+    if ($_settings{log}) {
+      my $header = ' ' . scalar(localtime()) . ' - NEW LOG START ';
+      return "\n" x 2
+        . '=' x 80 . "\n"
+        . '=' x 3 . $header . '=' x (77 - length($header)) . "\n"
+        . '=' x 80 . "\n";
+    }
+    else {
+      return "Content-type: text/plain\n\n";
+    }
   }
   if ($_settings{mode} eq 'html') {
     return "Content-type: text/html\n\n";
@@ -626,54 +626,54 @@ sub _get_header {
 }
 
 sub _prep_args {
-	return UNIVERSAL::isa($_[0], 'HASH') ? $_[0] : { @_ };
+  return UNIVERSAL::isa($_[0], 'HASH') ? $_[0] : { @_ };
 }
 
 sub import {
-	shift;
-	foreach (@_) {
-		$_settings{mode}   = 'html', next if /^html$/i;
-		$_settings{mode}   = 'text', next if /^text$/i;
-		$_settings{line}   = 1,      next if /^line$/i;
-		$_settings{log}    = 1,      next if /^log$/i;
-		$_settings{logger} = 1,      next if /^logger$/i;
-		$_settings{state}  = 0,      next if /^off$/i;
-		$_settings{stderr} = 1,      next if /^stderr$/i;
-		$_settings{pid}    = 1,      next if /^pid$/i;
+  shift;
+  foreach (@_) {
+    $_settings{mode}   = 'html', next if /^html$/i;
+    $_settings{mode}   = 'text', next if /^text$/i;
+    $_settings{line}   = 1,      next if /^line$/i;
+    $_settings{log}    = 1,      next if /^log$/i;
+    $_settings{logger} = 1,      next if /^logger$/i;
+    $_settings{state}  = 0,      next if /^off$/i;
+    $_settings{stderr} = 1,      next if /^stderr$/i;
+    $_settings{pid}    = 1,      next if /^pid$/i;
 
     $_settings{_header_printed} = 0, next if /^force_html_header$/i;
-	}
+  }
 
-	if (!$_settings{mode}) {
-		$_settings{mode} = 'text';
-		foreach (keys(%ENV)) {
-			$_settings{mode} = 'html', last if /^HTTP_/;
-		}
-	}
+  if (!$_settings{mode}) {
+    $_settings{mode} = 'text';
+    foreach (keys(%ENV)) {
+      $_settings{mode} = 'html', last if /^HTTP_/;
+    }
+  }
 
-	$_settings{_header_printed} = 0 unless $_settings{mode} eq 'text';
+  $_settings{_header_printed} = 0 unless $_settings{mode} eq 'text';
 
-	if ($_settings{log}) {
-		$_settings{mode}   = 'text';
-		$_settings{stderr} = 0;
-		$_settings{_header_printed} = 0;
-	}
+  if ($_settings{log}) {
+    $_settings{mode}   = 'text';
+    $_settings{stderr} = 0;
+    $_settings{_header_printed} = 0;
+  }
 
-	$_settings{_min_mode} = 0;
+  $_settings{_min_mode} = 0;
 
-	$_settings{state} = 0 if $ENV{ERIK_OFF};
+  $_settings{state} = 0 if $ENV{ERIK_OFF};
 }
 
 sub _html_friendly {
-	my $string = shift || return '';
+  my $string = shift || return '';
 
-	$string =~ s/  /&nbsp;&nbsp;/g;
-	$string =~ s/>/&gt;/g;
-	$string =~ s/</&lt;/g;
-	
-	$string =~ s/\n/<BR>/g;
+  $string =~ s/  /&nbsp;&nbsp;/g;
+  $string =~ s/>/&gt;/g;
+  $string =~ s/</&lt;/g;
+  
+  $string =~ s/\n/<BR>/g;
 
-	return $string;
+  return $string;
 }
 
 1;
@@ -684,61 +684,61 @@ Version 1.0
   Erik Tank - 2011/09/07
 
 Version 1.1
-	Erik Tank - 2011/09/07 - added _noticable so that variables are all uc()'ed
+  Erik Tank - 2011/09/07 - added _noticable so that variables are all uc()'ed
 
 Version 1.2
-	Erik Tank - 2011/10/25 - added auto line number
+  Erik Tank - 2011/10/25 - added auto line number
 
 Version 1.3
-	Erik Tank - 2012/03/12 - added print to log ability
+  Erik Tank - 2012/03/12 - added print to log ability
 
 Version 1.4
-	Erik Tank - 2012/03/30 - added pid to the output
+  Erik Tank - 2012/03/30 - added pid to the output
 
 Version 1.5
-	Erik Tank - 2012/04/04 - added log 'header' to seperate program runs
+  Erik Tank - 2012/04/04 - added log 'header' to seperate program runs
 
 Version 1.6
-	Erik Tank - 2012/04/12 - removed the uc() from header because sometimes it gets in the way and it's not worth it
+  Erik Tank - 2012/04/12 - removed the uc() from header because sometimes it gets in the way and it's not worth it
 
 Version 1.7
-	Erik Tank - 2013/01/04 - added spacer method
+  Erik Tank - 2013/01/04 - added spacer method
 
 Version 1.8
-	Erik Tank - 2013/01/09 - add min
+  Erik Tank - 2013/01/09 - add min
 
 Version 1.9
-	Erik Tank - 2013/10/22 - updated dump to actually use Data::Dumper is LW code is not present
+  Erik Tank - 2013/10/22 - updated dump to actually use Data::Dumper is LW code is not present
 
 Version 1.10
-	Erik Tank - 2014/01/13 - added environmental variable ERIK_DISABLE
+  Erik Tank - 2014/01/13 - added environmental variable ERIK_DISABLE
 
 Version 1.11
-	Erik Tank - 2014/01/13 - converted env var ERIK_DISABLE to ERIK_OFF and turned ERIK_DISABLE into a true disable.
+  Erik Tank - 2014/01/13 - converted env var ERIK_DISABLE to ERIK_OFF and turned ERIK_DISABLE into a true disable.
 
 Version 1.12
-	Erik Tank - 2014/04/01 - Fix info method so that output looks like what I'm expecting.
+  Erik Tank - 2014/04/01 - Fix info method so that output looks like what I'm expecting.
 
 Version 1.13
-	Erik Tank - 2014/10/21 - Remove the use of LW::Util::Dumper
+  Erik Tank - 2014/10/21 - Remove the use of LW::Util::Dumper
 
 Version 1.14
-	Erik Tank - 2014/10/27 - Added module_location sub
+  Erik Tank - 2014/10/27 - Added module_location sub
 
 Version 1.15
-	Erik Tank - 2015/01/20 - Added print_file sub
+  Erik Tank - 2015/01/20 - Added print_file sub
 
 Version 1.16
-    Erik Tank - 2015/03/30 - All to set depth for dump
+  Erik Tank - 2015/03/30 - All to set depth for dump
 
 Version 1.17
-    Erik Tank - 2015/04/06 - Added ability to enable/disable Erik in certain namespaces
+  Erik Tank - 2015/04/06 - Added ability to enable/disable Erik in certain namespaces
 
 Version 1.18
-    Erik Tank - 2015/04/15 - Add method()
+  Erik Tank - 2015/04/15 - Add method()
 
 Version 1.19
-    Erik Tank - 2015/05/13 - Add info() and log()
+  Erik Tank - 2015/05/13 - Add info() and log()
 
 Version 1.20
-    Erik Tank - 2015/05/13 - If the last command was a min() command print and \n when script ends
+  Erik Tank - 2015/05/13 - If the last command was a min() command print and \n when script ends
