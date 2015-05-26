@@ -200,21 +200,21 @@ sub moduleLocation {
 
 }
 
-=head2 info
+=head2 yell
 
 =over 4
 
 =item Description
 
 
- Erik::info('Some information to display');
+ Erik::yell('Some information to display');
 
 This will print the information between two lines of '*****'s.
 
 =back
 
 =cut
-sub info {
+sub yell {
   _print('*'x80, shift, '*'x80, "\n");
 }
 
