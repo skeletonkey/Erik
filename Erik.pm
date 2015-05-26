@@ -617,7 +617,7 @@ sub _get_header {
       return "Content-type: text/plain\n\n";
     }
   }
-  if ($_settings{mode} eq 'html') {
+  elsif ($_settings{mode} eq 'html') {
     return "Content-type: text/html\n\n";
   }
   else {
@@ -742,3 +742,6 @@ Version 1.19
 
 Version 1.20
   Erik Tank - 2015/05/13 - If the last command was a min() command print and \n when script ends
+
+Version 1.21
+  Erik Tank - 2015/05/26 - minor logic fix
