@@ -188,7 +188,7 @@ sub moduleLocation {
     my $search_arg = shift || '';
 
     my $name = 'Module Location';
-  _print(_header($name));
+    _print(_header($name));
     my $found = 0;
     KEY: foreach my $key (sort {uc($a) cmp uc($b)} keys %INC) {
         next KEY if $search_arg && $key !~ /$search_arg/i;
@@ -196,7 +196,7 @@ sub moduleLocation {
         $found = 1;
     }
     _print("Search arg ($search_arg) no found in \%INC\n") unless $found;
-  _print(_header("END: $name"));
+    _print(_header("END: $name"));
 
 }
 
