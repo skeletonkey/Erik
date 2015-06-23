@@ -216,7 +216,7 @@ This will print the information between two lines of '*****'s.
 
 =cut
 sub yell {
-  _print('*'x80, shift, '*'x80, "\n");
+  _print('*'x80, shift, '*'x80 . "\n");
 }
 
 =head2 vars
@@ -754,3 +754,6 @@ Version 1.20
 
 Version 1.21
   Erik Tank - 2015/05/26 - minor logic fix
+
+Version 1.22
+  Erik Tank - 2015/06/23 - fix yell and add testing
