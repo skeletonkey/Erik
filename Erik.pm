@@ -95,6 +95,7 @@ my %_settings = (
   _header_printed => 1, # since only printed once a value of 0 means print
   _logger         => undef, # only get the Log::Log4perl's logger once
 );
+my %_default_settings = %_settings;
 
 my $log_filename       = '/tmp/erik.out';
 my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
@@ -627,6 +628,14 @@ sub _get_header {
 
 sub _prep_args {
   return UNIVERSAL::isa($_[0], 'HASH') ? $_[0] : { @_ };
+}
+
+sub _get_settings {
+    return \%_settings;
+}
+
+sub _reset_settings {
+    %_settings = %_default_settings;
 }
 
 sub import {
