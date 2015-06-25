@@ -92,8 +92,9 @@ my %_settings = (
   logger => 0, # 1 - send prints also to Log::Log4perl's logger
   pid    => 0, # 1 - print the process id and order id
 
-  _header_printed => 1, # since only printed once a value of 0 means print
-  _logger         => undef, # only get the Log::Log4perl's logger once
+  _header_printed    => 1, # since only printed once a value of 0 means print
+  _logger            => undef, # only get the Log::Log4perl's logger once
+  _stack_trace_limit => 1, # num of stack traces to print out from a given subroutine - use stackTraceLimit to change this
 );
 my %_default_settings = %_settings;
 
@@ -114,7 +115,7 @@ END {
 
  Erik::stackTrace();
 
-Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop.  [This is not true.  I'll need to investigate what I've done here to update this comment correctly.]
+Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop. This can be changed by calling stackTraceLimit.
 
 =back
 
@@ -124,12 +125,34 @@ sub stackTrace {
   my $level = 1;
   my $output = '';
   CALLER: while (my @data = caller($level++)) {
-    last CALLER if $stackTraceLimit{$data[3]}++ > 20;
+    last CALLER if ++$stackTraceLimit{$data[3]} > $_settings{_stack_trace_limit};
     $output .= _header('stack trace') if $level == 2;
     $output .= 'Level ' . ($level - 1) . ': ' . join(' - ', @data[0..3]) . "\n";
   }
   $output .= _header('end of stack trace') if $level > 2;
   _print($output);
+}
+
+=head2 stackTraceLimit
+
+=over 4
+
+=item Description
+
+ my $limit = Erik::stackTraceLimit();
+ my $limit = Erik::stackTraceLimit(5);
+
+Set/Get the number of times a stack trace will be printed for a subroutine.
+
+Default is set to 1 so that you don't get a ton of output if a subroutine is called mulitple times.
+
+=back
+
+=cut
+sub stackTraceLimit {
+    my $new_setting = shift || 0;
+    $_settings{_stack_trace_limit} = $new_setting if $new_setting;
+    return $_settings{_stack_trace_limit};
 }
 
 =head2 dump
@@ -757,3 +780,6 @@ Version 1.21
 
 Version 1.22
   Erik Tank - 2015/06/23 - fix yell and add testing
+
+Version 1.23
+  Erik Tank - 2015/06/24 - fixed/tested stackTrace - also added ability to change the limit for printing stack traces

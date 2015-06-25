@@ -10,16 +10,17 @@ use Test::Mock::Simple;
 require_ok('Erik');
 
 my %default_settings = (
-    _header_printed => 1,
-    _logger         => undef,
-    _min_mode       => 0,
-    line            => 0,
-    log             => 0,
-    logger          => 0,
-    mode            => 0,
-    pid             => 0,
-    state           => 1,
-    stderr          => 0,
+    _header_printed    => 1,
+    _logger            => undef,
+    _stack_trace_limit => 1,
+    _min_mode          => 0,
+    line               => 0,
+    log                => 0,
+    logger             => 0,
+    mode               => 0,
+    pid                => 0,
+    state              => 1,
+    stderr             => 0,
 );
 
 my %setting_tests = (
@@ -69,14 +70,14 @@ $erik_mock->add(_print => sub { $temp_var = join("\n", @_); });
 Erik::sanity("Testing 2");
 is(
     $temp_var,
-    "*** t/test_it_all.t [69]: Testing 2 ********************************************\n",
+    "*** t/test_it_all.t [70]: Testing 2 ********************************************\n",
     "Sanity with a string works"
 );
 
 Erik::sanity();
 is(
     $temp_var,
-    "*** t/test_it_all.t [76] *******************************************************\n",
+    "*** t/test_it_all.t [77] *******************************************************\n",
     "Sanity without any string works"
 );
 
@@ -94,7 +95,7 @@ my ($x, $y, $z) = (1, 2, 3);
 Erik::vars(x => $x);
 is(
     $temp_var,
-    "***  94 - x: 1 *****************************************************************\n",
+    "***  95 - x: 1 *****************************************************************\n",
     "vars with just x"
 );
 
@@ -102,21 +103,21 @@ undef($x);
 Erik::vars(z => $z, 'Just Me' => $y, x => $x);
 is(
     $temp_var,
-    "***  102 - Just Me: 2\tx: [UNDEF]\tz: 3 ******************************************\n",
+    "***  103 - Just Me: 2\tx: [UNDEF]\tz: 3 ******************************************\n",
     "vars with just x"
 );
 
 Erik::info();
 is(
     $temp_var,
-    "*** t/test_it_all.t [109] ******************************************************\n",
+    "*** t/test_it_all.t [110] ******************************************************\n",
     "info works"
 );
 
 Erik::log('Log This');
 is(
     $temp_var,
-    "*** t/test_it_all.t [116]: Log This ********************************************\n",
+    "*** t/test_it_all.t [117]: Log This ********************************************\n",
     "info works"
 );
 
@@ -124,7 +125,7 @@ sub yas { Erik::subroutine(); }
 yas();
 is(
     $temp_var,
-    "*** t/test_it_all.t [123]: yas *************************************************\n",
+    "*** t/test_it_all.t [124]: yas *************************************************\n",
     "info works"
 );
 
@@ -132,7 +133,7 @@ sub yam { Erik::method(); }
 yam();
 is(
     $temp_var,
-    "*** t/test_it_all.t [131]: yam *************************************************\n",
+    "*** t/test_it_all.t [132]: yam *************************************************\n",
     "method works"
 );
 
@@ -154,6 +155,58 @@ is(
     Erik::_noticable(),
     "nothing passed",
     "_noticable with nothing passed"
+);
+
+is(Erik::stackTraceLimit(),  1, 'Get stack trace limit');
+is(Erik::stackTraceLimit(5), 5, 'Set stack trace limit');
+is(Erik::stackTraceLimit(),  5, 'Get stack trace limit after setting it');
+Erik::stackTraceLimit(1);
+sub yast  { yast2(); }
+sub yast2 { Erik::stackTrace(); }
+yast();
+is(
+    $temp_var,
+    q+*** stack trace ****************************************************************
+Level 1: main - t/test_it_all.t - 164 - main::yast2
+Level 2: main - t/test_it_all.t - 166 - main::yast
+*** end of stack trace *********************************************************
++,
+    "StackTrace"
+);
+
+Erik::stackTrace();
+is(
+    $temp_var,
+    '',
+    "StackTracing nothing"
+);
+
+yast() for 1..2;
+is(
+    $temp_var,
+    '',
+    "StackTrace called 2 times with default limit"
+);
+
+# why 5? the count is done through the run the program so to make sure that
+# limit works ... just trust me this tests the correct thing :)
+Erik::stackTraceLimit(5);
+yast() for 1..2;
+is(
+    $temp_var,
+    q+*** stack trace ****************************************************************
+Level 1: main - t/test_it_all.t - 164 - main::yast2
+Level 2: main - t/test_it_all.t - 194 - main::yast
+*** end of stack trace *********************************************************
++,
+    "StackTrace called 2 times with limit set to 5"
+);
+
+yast();
+is(
+    $temp_var,
+    '',
+    "StackTrace called after limit has been reached"
 );
 
 done_testing();
