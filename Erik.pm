@@ -712,6 +712,24 @@ sub _html_friendly {
 
 __END__
 
+=head1 DEPENDENCIES
+
+Data::Dumper - only if Erik::dump() is called
+
+=head1 AUTHOR
+
+Erik Tank, tank@jundy.com
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 by Erik Tank
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.14.2 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut
+
 Version 1.0
   Erik Tank - 2011/09/07
 
