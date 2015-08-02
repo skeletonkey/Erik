@@ -133,6 +133,22 @@ sub stackTrace {
   _print($output);
 }
 
+=head2 stack_trace
+
+=over 4
+
+=item Description
+
+ Erik::stack_trace();
+
+An alias for Erik::stackTrace(). See stackTrace documentation.
+
+=back
+
+=cut
+sub stack_trace { goto &stackTrace; }
+
+
 =head2 stackTraceLimit
 
 =over 4
@@ -154,6 +170,21 @@ sub stackTraceLimit {
     $_settings{_stack_trace_limit} = $new_setting if $new_setting;
     return $_settings{_stack_trace_limit};
 }
+
+=head2 stack_trace_limit
+
+=over 4
+
+=item Description
+
+ Erik::stack_trace_limit();
+
+An alias for Erik::stackTraceLimit(). See stackTraceLimit documentation.
+
+=back
+
+=cut
+sub stack_trace_limit { goto &stackTraceLimit; }
 
 =head2 dump
 
@@ -202,8 +233,7 @@ sub dump {
  Erik::moduleLocation();
  Erik::moduleLocation('carp');
 
-This will display a nice version of %INC.  If an arg is provided it will be
-used to filter for that string (case in-sensitive) in %INC's keys.
+ An alias for Erik::module_location(). See module_location documentation.
 
 =back
 
@@ -223,6 +253,23 @@ sub moduleLocation {
     _print(_header("END: $name"));
 
 }
+
+=head2 module_location
+
+=over 4
+
+=item Description
+
+ Erik::module_location();
+ Erik::module_location('carp');
+
+This will display a nice version of %INC.  If an arg is provided it will be
+used to filter for that string (case in-sensitive) in %INC's keys.
+
+=back
+
+=cut
+sub module_location { goto &moduleLocation; }
 
 =head2 yell
 
@@ -471,6 +518,22 @@ Turns off debugging for the next command then it's turned back on again.  If deb
 =cut
 sub singleOff { $_settings{state} = -1 if $_settings{state}; }
 
+=head2 single_off
+
+=over 4
+
+=item Description
+
+ Erik::single_off('file_name');
+
+An alias for Erik::single_off(). See singleOff documentation.
+
+=back
+
+=cut
+sub single_off { goto &singleOff; }
+
+
 =head2 spacer
 
 =over 4
@@ -526,6 +589,21 @@ sub printFile {
     _print($contents);
     _print(_header("END: $filename"));
 }
+
+=head2 print_file
+
+=over 4
+
+=item Description
+
+ Erik::print_file('file_name');
+
+An alias for Erik::printFile(). See printFile documentation.
+
+=back
+
+=cut
+sub print_file { goto &printFile; }
 
 sub _isDefined {
   my $var = shift;

@@ -66,22 +66,22 @@ Erik::vars(cgi => $cgi, x => $x);
 Erik::min($_) for 1..10;
 Erik::sanity("1 though 10 should be on the previous line");
 
-Erik::moduleLocation();
-Erik::moduleLocation('Erik');
+Erik::module_location();
+Erik::module_location('Erik');
 
-Erik::printFile($tmp_file);
+Erik::print_file($tmp_file);
 
-Erik::singleOff();
+Erik::single_off();
 Erik::sanity("This should not be printed");
 Erik::sanity("You should see this line!!!!");
 
 Erik::spacer(5);
 Erik::sanity("There should be 5 empty lines above me");
 
-stackTrace();
+stack_trace();
 
 Erik::toggle;
-stackTrace();
+stack_trace();
 Erik::sanity("You should NOT be seeing this or the second stack trace");
 Erik::toggle;
 Erik::sanity("Toggled around and around - btw you should see this");
@@ -96,11 +96,11 @@ sub my_sub {
     Erik::method;
 }
 
-sub stackTrace {
-    _stackTrace();
+sub stack_trace {
+    _stack_trace();
 }
-sub _stackTrace {
-    Erik::stackTrace;
+sub _stack_trace {
+    Erik::stack_trace;
 }
 
 package second;
