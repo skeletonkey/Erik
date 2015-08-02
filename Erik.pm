@@ -879,3 +879,6 @@ Version 1.22
 
 Version 1.23
   Erik Tank - 2015/06/24 - fixed/tested stackTrace - also added ability to change the limit for printing stack traces
+
+Version 1.24
+  Erik Tank - 2015/08/02 - added non-CamelCase version of methods
