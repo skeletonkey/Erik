@@ -244,4 +244,75 @@ is(
     "Dump a variable with max depth of 1"
 );
 
+is(
+    Erik::_html_friendly(),
+    '',
+    "_html_friendly with no arg"
+);
+
+is(
+    Erik::_html_friendly('Hello World'),
+    'Hello World',
+    "_html_friendly with Hello World"
+);
+
+is(
+    Erik::_html_friendly('<h1>Hello World  </h1>'),
+    '&lt;h1&gt;Hello World&nbsp;&nbsp;&lt;/h1&gt;',
+    '_html_friendly with <h1>Hello World  </h1>'
+);
+
+eval { Erik::_get_header() };
+is(
+    $@,
+    "Unsupported mode type: 0\n",
+    'Header gonna die!!!!'
+);
+
+Erik->import(html => 1);
+is(
+    Erik::_get_header(),
+    "Content-type: text/html\n\n",
+    "HTML header"
+);
+
+Erik->import(text => 1);
+is(
+    Erik::_get_header(),
+    "Content-type: text/plain\n\n",
+    "Text header without logging"
+);
+
+Erik::_reset_settings(),
+$ENV{ERIK_OFF} = 1;
+$ENV{HTTP_TESTING} = 1;
+Erik->import();
+is(
+    Erik::_get_header(),
+    "Content-type: text/html\n\n",
+    "HTML header from ENV"
+);
+delete $ENV{ERIK_OFF};
+delete $ENV{HTTP_TESTING};
+
+Erik::enable();
+is(
+    Erik::_im_disabled(),
+    0,
+    "Shouldn't be disabled"
+);
+
+Erik::min(1);
+is(
+    $temp_var,
+    '1',
+    'using min with 1'
+);
+Erik::min(2);
+is(
+    $temp_var,
+    ', 2',
+    'min a second time'
+);
+
 done_testing();
