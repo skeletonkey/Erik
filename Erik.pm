@@ -208,8 +208,8 @@ maxdepth (or a simple number as the 3rd arg) will limit the depth of the dump.  
 
 =cut
 sub dump {
-  my $name            = shift;
-  my $var             = shift;
+    my $name            = shift;
+    my $var             = shift;
     my $max_depth_label = shift;
     my $max_depth       = shift;
 
