@@ -315,4 +315,20 @@ is(
     'min a second time'
 );
 
+Erik::dump($x);
+is(
+    $temp_var,
+q+*** No Name Provided ***********************************************************
+$VAR1 = [
+          1,
+          {
+            '2' => 'two'
+          },
+          3
+        ];
+*** END: No Name Provided ******************************************************
++,
+    "Dump a variable with only a ref"
+);
+
 done_testing();

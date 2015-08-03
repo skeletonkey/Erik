@@ -197,6 +197,9 @@ sub stack_trace_limit { goto &stackTraceLimit; }
  Erik::dump(name => $ref_to_dump);
  Erik::dump(name => $ref_to_dump, maxdepth => 3);
  Erik::dump(name => $ref_to_dump, 3);
+ Erik::dump($ref_to_dump);
+ Erik::dump($ref_to_dump, maxdepth => 3); # WILL NOT WORK!!!!!!!!!!!!!!!!
+ Erik::dump($ref_to_dump, 3);             # WILL NOT WORK!!!!!!!!!!!!!!!!
 
 This will 'dump' the content of the variable reference that is passed.  The name is simply what is displayed above and below it.
 
@@ -204,12 +207,25 @@ It will attempt to use Data::Dumper.  If it is not installed then it just blows 
 
 maxdepth (or a simple number as the 3rd arg) will limit the depth of the dump.  (Used to set $Data::Dumper::Maxdepth)  No argument or 0 assumes unlimited.
 
+If you only provide a reference to a variable it will dump that out.  There is no ability to set maxdepth with this.  Infact, using maxdepth at that point will not work!!!!
+
 =back
 
 =cut
 sub dump {
     my $name            = shift;
     my $var             = shift;
+
+    if (!defined $var) {
+        if (ref $name) {
+            $var  = $name;
+            $name = 'No Name Provided';
+        }
+        else {
+            die("dump called improperly: Erik::dump(title => \\\%var);");
+        }
+    }
+
     my $max_depth_label = shift;
     my $max_depth       = shift;
 
