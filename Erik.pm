@@ -566,7 +566,7 @@ sub _im_disabled {
             $disabled = 0;
         }
         elsif ($_settings{state} == -1) {
-        $_settings{state} = 1;
+            $_settings{state} = 1;
         }
     }
     else {
