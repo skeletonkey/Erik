@@ -7,7 +7,7 @@ use Test::More;
 use Test::Deep;
 use Test::Mock::Simple;
 
-require_ok('Erik');
+unshift @INC, '.'; require_ok('Erik');
 
 my %default_settings = (
     _header_printed    => 1,
@@ -54,12 +54,12 @@ Erik::disable();
 is(Erik::_get_settings()->{state}, 0, 'State is off after disable');
 Erik::enable();
 is(Erik::_get_settings()->{state}, 1, 'State is on after enable');
-Erik::singleOff();
+Erik::single_off();
 is(Erik::_get_settings()->{state}, -1, 'State is in single off mode');
 Erik::disable();
 is(Erik::_get_settings()->{state}, 0, 'State is off after disable');
-Erik::singleOff();
-is(Erik::_get_settings()->{state}, 0, 'State is still off after singleOff attempt');
+Erik::single_off();
+is(Erik::_get_settings()->{state}, 0, 'State is still off after single_off attempt');
 
 Erik::enable();
 
@@ -157,12 +157,12 @@ is(
     "_noticable with nothing passed"
 );
 
-is(Erik::stackTraceLimit(),  1, 'Get stack trace limit');
-is(Erik::stackTraceLimit(5), 5, 'Set stack trace limit');
-is(Erik::stackTraceLimit(),  5, 'Get stack trace limit after setting it');
-Erik::stackTraceLimit(1);
+is(Erik::stack_trace_limit(),  1, 'Get stack trace limit');
+is(Erik::stack_trace_limit(5), 5, 'Set stack trace limit');
+is(Erik::stack_trace_limit(),  5, 'Get stack trace limit after setting it');
+Erik::stack_trace_limit(1);
 sub yast  { yast2(); }
-sub yast2 { Erik::stackTrace(); }
+sub yast2 { Erik::stack_trace(); }
 yast();
 is(
     $temp_var,
@@ -171,10 +171,10 @@ Level 1: main - t/test_it_all.t - 164 - main::yast2
 Level 2: main - t/test_it_all.t - 166 - main::yast
 *** end of stack trace *********************************************************
 +,
-    "StackTrace"
+    "Stack Trace"
 );
 
-Erik::stackTrace();
+Erik::stack_trace();
 is(
     $temp_var,
     '',
@@ -185,12 +185,12 @@ yast() for 1..2;
 is(
     $temp_var,
     '',
-    "StackTrace called 2 times with default limit"
+    "stack_trace called 2 times with default limit"
 );
 
 # why 5? the count is done through the run the program so to make sure that
 # limit works ... just trust me this tests the correct thing :)
-Erik::stackTraceLimit(5);
+Erik::stack_trace_limit(5);
 yast() for 1..2;
 is(
     $temp_var,
@@ -199,14 +199,14 @@ Level 1: main - t/test_it_all.t - 164 - main::yast2
 Level 2: main - t/test_it_all.t - 194 - main::yast
 *** end of stack trace *********************************************************
 +,
-    "StackTrace called 2 times with limit set to 5"
+    "stack_trace called 2 times with limit set to 5"
 );
 
 yast();
 is(
     $temp_var,
     '',
-    "StackTrace called after limit has been reached"
+    "stack_trace called after limit has been reached"
 );
 
 $x = [

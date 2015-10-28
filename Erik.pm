@@ -76,7 +76,7 @@ Totally disables Erik's print method so nothing will show up.
  Erik::sanity();          # output: file_name [line_num]
  Erik::sanity('message'); # output: file_name [line_num]: message
 
- Erik::stackTrace(); # full blow stack trace telling you how you got there
+ Erik::stack_trace(); # full blow stack trace telling you how you got there
 
  Erik::vars('name', $name); # just prints out that variable
  Erik::vars({ name1 => $name1, name2 => $name2 }); # print one line sep by tabs
@@ -94,7 +94,7 @@ my %_settings = (
 
   _header_printed    => 1, # since only printed once a value of 0 means print
   _logger            => undef, # only get the Log::Log4perl's logger once
-  _stack_trace_limit => 1, # num of stack traces to print out from a given subroutine - use stackTraceLimit to change this
+  _stack_trace_limit => 1, # num of stack traces to print out from a given subroutine - use stack_trace_limit to change this
 );
 my %_default_settings = %_settings;
 
@@ -107,32 +107,6 @@ END {
 
 =head1 METHODS
 
-=head2 stackTrace
-
-=over 4
-
-=item Description
-
- Erik::stackTrace();
-
-Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop. This can be changed by calling stackTraceLimit.
-
-=back
-
-=cut
-my %stackTraceLimit = ();
-sub stackTrace {
-  my $level = 1;
-  my $output = '';
-  CALLER: while (my @data = caller($level++)) {
-    last CALLER if ++$stackTraceLimit{$data[3]} > $_settings{_stack_trace_limit};
-    $output .= _header('stack trace') if $level == 2;
-    $output .= 'Level ' . ($level - 1) . ': ' . join(' - ', @data[0..3]) . "\n";
-  }
-  $output .= _header('end of stack trace') if $level > 2;
-  _print($output);
-}
-
 =head2 stack_trace
 
 =over 4
@@ -141,34 +115,22 @@ sub stackTrace {
 
  Erik::stack_trace();
 
-An alias for Erik::stackTrace(). See stackTrace documentation.
+Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop. This can be changed by calling stack_trace_limit.
 
 =back
 
 =cut
-sub stack_trace { goto &stackTrace; }
-
-
-=head2 stackTraceLimit
-
-=over 4
-
-=item Description
-
- my $limit = Erik::stackTraceLimit();
- my $limit = Erik::stackTraceLimit(5);
-
-Set/Get the number of times a stack trace will be printed for a subroutine.
-
-Default is set to 1 so that you don't get a ton of output if a subroutine is called mulitple times.
-
-=back
-
-=cut
-sub stackTraceLimit {
-    my $new_setting = shift || 0;
-    $_settings{_stack_trace_limit} = $new_setting if $new_setting;
-    return $_settings{_stack_trace_limit};
+my %stack_trace_limit = ();
+sub stack_trace {
+  my $level = 1;
+  my $output = '';
+  CALLER: while (my @data = caller($level++)) {
+    last CALLER if ++$stack_trace_limit{$data[3]} > $_settings{_stack_trace_limit};
+    $output .= _header('stack trace') if $level == 2;
+    $output .= 'Level ' . ($level - 1) . ': ' . join(' - ', @data[0..3]) . "\n";
+  }
+  $output .= _header('end of stack trace') if $level > 2;
+  _print($output);
 }
 
 =head2 stack_trace_limit
@@ -177,14 +139,21 @@ sub stackTraceLimit {
 
 =item Description
 
- Erik::stack_trace_limit();
+ my $limit = Erik::stack_trace_limit();
+ my $limit = Erik::stack_trace_limit(5);
 
-An alias for Erik::stackTraceLimit(). See stackTraceLimit documentation.
+Set/Get the number of times a stack trace will be printed for a subroutine.
+
+Default is set to 1 so that you don't get a ton of output if a subroutine is called mulitple times.
 
 =back
 
 =cut
-sub stack_trace_limit { goto &stackTraceLimit; }
+sub stack_trace_limit {
+    my $new_setting = shift || 0;
+    $_settings{_stack_trace_limit} = $new_setting if $new_setting;
+    return $_settings{_stack_trace_limit};
+}
 
 =head2 dump
 
@@ -239,22 +208,22 @@ sub dump {
   _print(_header($name) . $dump . _header("END: $name"));
 }
 
-=head2 moduleLocation
+=head2 module_location
 
 =over 4
 
 =item Description
 
 
- Erik::moduleLocation();
- Erik::moduleLocation('carp');
+ Erik::module_location();
+ Erik::module_location('carp');
 
  An alias for Erik::module_location(). See module_location documentation.
 
 =back
 
 =cut
-sub moduleLocation {
+sub module_location {
     my $search_arg = shift || '';
 
     my $name = 'Module Location';
@@ -269,23 +238,6 @@ sub moduleLocation {
     _print(_header("END: $name"));
 
 }
-
-=head2 module_location
-
-=over 4
-
-=item Description
-
- Erik::module_location();
- Erik::module_location('carp');
-
-This will display a nice version of %INC.  If an arg is provided it will be
-used to filter for that string (case in-sensitive) in %INC's keys.
-
-=back
-
-=cut
-sub module_location { goto &moduleLocation; }
 
 =head2 yell
 
@@ -325,7 +277,7 @@ sub vars {
 
   my @data = caller;
   _print(_noticable(" $data[2] - "
-    . join("\t", map({"$_: " . _isDefined($args->{$_})} sort {$a cmp $b} keys %$args))));
+    . join("\t", map({"$_: " . _is_defined($args->{$_})} sort {$a cmp $b} keys %$args))));
 }
 
 =head2 sanity
@@ -388,7 +340,7 @@ sub log { goto &sanity; }
  Erik::subroutine();
 
 Simply print a line with the following format:
-*** file_name [line_num]: SubroutineName ***************************************
+*** file_name [line_num]: Subroutine_Name **************************************
 
 =back
 
@@ -519,36 +471,20 @@ sub enable  {
     $_settings{state} = 1;
 }
 
-=head2 singleOff
-
-=over 4
-
-=item Description
-
- Erik::singleOff();
-
-Turns off debugging for the next command then it's turned back on again.  If debugging is off already then it does nothing.
-
-=back
-
-=cut
-sub singleOff { $_settings{state} = -1 if $_settings{state}; }
-
 =head2 single_off
 
 =over 4
 
 =item Description
 
- Erik::single_off('file_name');
+ Erik::single_off();
 
-An alias for Erik::single_off(). See singleOff documentation.
+Turns off debugging for the next command then it's turned back on again.  If debugging is off already then it does nothing.
 
 =back
 
 =cut
-sub single_off { goto &singleOff; }
-
+sub single_off { $_settings{state} = -1 if $_settings{state}; }
 
 =head2 spacer
 
@@ -575,20 +511,20 @@ sub spacer {
   }
 }
 
-=head2 printFile
+=head2 print_file
 
 =over 4
 
 =item Description
 
- Erik::printFile($filename);
+ Erik::print_file($filename);
 
 Print out the content of the file.
 
 =back
 
 =cut
-sub printFile {
+sub print_file {
     my $filename = shift;
     die("$filename does not exists") unless -e $filename;
     die("$filename is not a file") unless -f $filename;
@@ -606,22 +542,7 @@ sub printFile {
     _print(_header("END: $filename"));
 }
 
-=head2 print_file
-
-=over 4
-
-=item Description
-
- Erik::print_file('file_name');
-
-An alias for Erik::printFile(). See printFile documentation.
-
-=back
-
-=cut
-sub print_file { goto &printFile; }
-
-sub _isDefined {
+sub _is_defined {
   my $var = shift;
   $var = '[UNDEF]' unless defined($var);
   return $var;
@@ -898,3 +819,6 @@ Version 1.23
 
 Version 1.24
   Erik Tank - 2015/08/02 - added non-CamelCase version of methods
+
+Version 1.25
+  Erik Tank - 2015/10/28 - remove camelCase methods
