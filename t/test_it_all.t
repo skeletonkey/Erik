@@ -331,4 +331,20 @@ $VAR1 = [
     "Dump a variable with only a ref"
 );
 
+is(Erik::_im_disabled(), 0, 'Not disabled');
+Erik::disable();
+is(Erik::_im_disabled(), 1, 'Is disabled');
+Erik::disable('something_module');
+is(Erik::_im_disabled(), 0, 'Not disabled in main');
+
+
+Erik->import('text');
+is(Erik::_get_header(), "Content-type: text/plain\n\n", "Normal Header");
+Erik->import('html');
+is(Erik::_get_header(), "Content-type: text/html\n\n", "HTML Header");
+Erik->import('log');
+like(Erik::_get_header(), qr/=== .+? - NEW LOG START =+/, 'Log Header');
+Erik->_reset_settings();
+
+
 done_testing();
