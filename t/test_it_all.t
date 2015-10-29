@@ -177,8 +177,11 @@ Level 2: main - t/test_it_all.t - 166 - main::yast
 Erik::stack_trace();
 is(
     $temp_var,
-    '',
-    "StackTracing nothing"
+    q+*** stack trace ****************************************************************
+WARNING: called from main - no stack trace available
+*** end of stack trace *********************************************************
++,
+    "Stack Tracing nothing"
 );
 
 yast() for 1..2;
@@ -196,7 +199,7 @@ is(
     $temp_var,
     q+*** stack trace ****************************************************************
 Level 1: main - t/test_it_all.t - 164 - main::yast2
-Level 2: main - t/test_it_all.t - 194 - main::yast
+Level 2: main - t/test_it_all.t - 197 - main::yast
 *** end of stack trace *********************************************************
 +,
     "stack_trace called 2 times with limit set to 5"
@@ -346,5 +349,28 @@ Erik->import('log');
 like(Erik::_get_header(), qr/=== .+? - NEW LOG START =+/, 'Log Header');
 Erik->_reset_settings();
 
+sub yast3 { yast4(); }
+sub yast4 { Erik::stack_trace(1); }
+yast3();
+is(
+    $temp_var,
+    "Caller: main - t/test_it_all.t - 352 - main::yast4\n",
+    "Just get caller info"
+);
+
+sub yast5 { yast6(); }
+sub yast6 { yast7(); }
+sub yast7 { yast8(); }
+sub yast8 { Erik::stack_trace(2); }
+yast5();
+is(
+    $temp_var,
+    q+*** stack trace ****************************************************************
+Level 1: main - t/test_it_all.t - 363 - main::yast8
+Level 2: main - t/test_it_all.t - 362 - main::yast7
+*** end of stack trace *********************************************************
++,
+    "Stack Trace with a level of 2"
+);
 
 done_testing();

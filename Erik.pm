@@ -114,22 +114,39 @@ END {
 =item Description
 
  Erik::stack_trace();
+ Erik::stack_trace(1);
+ Erik::stack_trace(5);
 
 Full blown stack trace telling you how you got there.  This will only happen once per subroutine - so it's safe to call it in a loop. This can be changed by calling stack_trace_limit.
+
+The argument will limit the number of 'levels' that are displayed for a stack trace.  Using a '1' is simply asking what/who has called the current method.
 
 =back
 
 =cut
 my %stack_trace_limit = ();
 sub stack_trace {
-  my $level = 1;
-  my $output = '';
-  CALLER: while (my @data = caller($level++)) {
-    last CALLER if ++$stack_trace_limit{$data[3]} > $_settings{_stack_trace_limit};
-    $output .= _header('stack trace') if $level == 2;
-    $output .= 'Level ' . ($level - 1) . ': ' . join(' - ', @data[0..3]) . "\n";
+  my $display_level = shift || 999999; # # of level's to show in a stack trace
+  my $level = 1; # level counter
+  my $limit_reached; # signal that we reached the max # of stack traces for a method
+  my $output = _header('stack trace');
+  CALLER: while (my @data = caller($level)) {
+    $limit_reached = 1, last CALLER if ++$stack_trace_limit{$data[3]} > $_settings{_stack_trace_limit};
+    last unless $display_level > 0;
+    if ($level == 1 && $display_level == 1) { # we only want to see what called this instead of full stack trace
+      $output = 'Caller: ' . join(' - ', @data[0..3]) . "\n";
+    }
+    else {
+      $output .= "Level $level: " . join(' - ', @data[0..3]) . "\n";
+    }
+    $display_level--;
+    $level++;
   }
-  $output .= _header('end of stack trace') if $level > 2;
+  # I'm sure there's a more effecient way of doing this, but I can't think of it right now
+  $output .= "WARNING: called from main - no stack trace available\n"
+    if $level == 1;
+  $output .= _header('end of stack trace') unless $level == 2 && $display_level == 0;
+  $output = '' if $limit_reached;
   _print($output);
 }
 
@@ -820,5 +837,8 @@ Version 1.23
 Version 1.24
   Erik Tank - 2015/08/02 - added non-CamelCase version of methods
 
-Version 1.25
+Version 2.00
   Erik Tank - 2015/10/28 - remove camelCase methods
+
+Version 2.01
+  Erik Tank - 2015/10/28 - update stack_trace to accept an argument to limit size of stack trace
