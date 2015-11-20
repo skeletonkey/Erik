@@ -199,8 +199,8 @@ If you only provide a reference to a variable it will dump that out.  There is n
 
 =cut
 sub dump {
-    my $name            = shift;
-    my $var             = shift;
+    my $name = shift;
+    my $var  = shift;
 
     if (!defined $var) {
         if (ref $name) {
