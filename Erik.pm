@@ -208,7 +208,7 @@ sub dump {
             $name = 'No Name Provided';
         }
         else {
-            die("dump called improperly: Erik::dump(title => \\\%var);");
+            warn("dump called improperly: Erik::dump(title => \\\%var);");
         }
     }
 
@@ -842,3 +842,6 @@ Version 2.00
 
 Version 2.01
   Erik Tank - 2015/10/28 - update stack_trace to accept an argument to limit size of stack trace
+
+Version 2.02
+  Erik Tank - 2015/11/19 - warn instead of die if dump is used incorrectly. This is a better practice in the circumstance.
