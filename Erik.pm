@@ -348,6 +348,21 @@ sub info { goto &sanity; }
 =cut
 sub log { goto &sanity; }
 
+=head2 warn
+
+=over 4
+
+=item Description
+
+ Erik::warn();
+
+ An alias for Erik::sanity(). See sanity documentation above.
+
+=back
+
+=cut
+sub warn { goto &sanity; }
+
 =head2 subroutine
 
 =over 4
@@ -845,3 +860,6 @@ Version 2.01
 
 Version 2.02
   Erik Tank - 2015/11/19 - warn instead of die if dump is used incorrectly. This is a better practice in the circumstance.
+
+Version 2.03
+  Erik Tank - 2016/01/06 - added Erik::warn(); another alias for sanity

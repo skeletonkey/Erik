@@ -6,6 +6,7 @@ use warnings;
 use Test::More;
 use Test::Deep;
 use Test::Mock::Simple;
+#use Test::Ouput;
 
 unshift @INC, '.'; require_ok('Erik');
 
@@ -70,14 +71,14 @@ $erik_mock->add(_print => sub { $temp_var = join("\n", @_); });
 Erik::sanity("Testing 2");
 is(
     $temp_var,
-    "*** t/test_it_all.t [70]: Testing 2 ********************************************\n",
+    "*** t/test_it_all.t [71]: Testing 2 ********************************************\n",
     "Sanity with a string works"
 );
 
 Erik::sanity();
 is(
     $temp_var,
-    "*** t/test_it_all.t [77] *******************************************************\n",
+    "*** t/test_it_all.t [78] *******************************************************\n",
     "Sanity without any string works"
 );
 
@@ -95,7 +96,7 @@ my ($x, $y, $z) = (1, 2, 3);
 Erik::vars(x => $x);
 is(
     $temp_var,
-    "***  95 - x: 1 *****************************************************************\n",
+    "***  96 - x: 1 *****************************************************************\n",
     "vars with just x"
 );
 
@@ -103,21 +104,21 @@ undef($x);
 Erik::vars(z => $z, 'Just Me' => $y, x => $x);
 is(
     $temp_var,
-    "***  103 - Just Me: 2\tx: [UNDEF]\tz: 3 ******************************************\n",
+    "***  104 - Just Me: 2\tx: [UNDEF]\tz: 3 ******************************************\n",
     "vars with just x"
 );
 
 Erik::info();
 is(
     $temp_var,
-    "*** t/test_it_all.t [110] ******************************************************\n",
+    "*** t/test_it_all.t [111] ******************************************************\n",
     "info works"
 );
 
 Erik::log('Log This');
 is(
     $temp_var,
-    "*** t/test_it_all.t [117]: Log This ********************************************\n",
+    "*** t/test_it_all.t [118]: Log This ********************************************\n",
     "info works"
 );
 
@@ -125,7 +126,7 @@ sub yas { Erik::subroutine(); }
 yas();
 is(
     $temp_var,
-    "*** t/test_it_all.t [124]: yas *************************************************\n",
+    "*** t/test_it_all.t [125]: yas *************************************************\n",
     "info works"
 );
 
@@ -133,7 +134,7 @@ sub yam { Erik::method(); }
 yam();
 is(
     $temp_var,
-    "*** t/test_it_all.t [132]: yam *************************************************\n",
+    "*** t/test_it_all.t [133]: yam *************************************************\n",
     "method works"
 );
 
@@ -167,8 +168,8 @@ yast();
 is(
     $temp_var,
     q+*** stack trace ****************************************************************
-Level 1: main - t/test_it_all.t - 164 - main::yast2
-Level 2: main - t/test_it_all.t - 166 - main::yast
+Level 1: main - t/test_it_all.t - 165 - main::yast2
+Level 2: main - t/test_it_all.t - 167 - main::yast
 *** end of stack trace *********************************************************
 +,
     "Stack Trace"
@@ -198,8 +199,8 @@ yast() for 1..2;
 is(
     $temp_var,
     q+*** stack trace ****************************************************************
-Level 1: main - t/test_it_all.t - 164 - main::yast2
-Level 2: main - t/test_it_all.t - 197 - main::yast
+Level 1: main - t/test_it_all.t - 165 - main::yast2
+Level 2: main - t/test_it_all.t - 198 - main::yast
 *** end of stack trace *********************************************************
 +,
     "stack_trace called 2 times with limit set to 5"
@@ -354,7 +355,7 @@ sub yast4 { Erik::stack_trace(1); }
 yast3();
 is(
     $temp_var,
-    "Caller: main - t/test_it_all.t - 352 - main::yast4\n",
+    "Caller: main - t/test_it_all.t - 353 - main::yast4\n",
     "Just get caller info"
 );
 
@@ -366,11 +367,19 @@ yast5();
 is(
     $temp_var,
     q+*** stack trace ****************************************************************
-Level 1: main - t/test_it_all.t - 363 - main::yast8
-Level 2: main - t/test_it_all.t - 362 - main::yast7
+Level 1: main - t/test_it_all.t - 364 - main::yast8
+Level 2: main - t/test_it_all.t - 363 - main::yast7
 *** end of stack trace *********************************************************
 +,
     "Stack Trace with a level of 2"
 );
+
+Erik::warn('warn This');
+is(
+    $temp_var,
+    "*** t/test_it_all.t [377]: warn This *******************************************\n",
+    "warn works"
+);
+
 
 done_testing();
