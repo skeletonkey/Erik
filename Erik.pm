@@ -208,7 +208,10 @@ sub dump {
             $name = 'No Name Provided';
         }
         else {
-            warn("dump called improperly: Erik::dump(title => \\\%var);");
+            my @called_from = caller(1);
+            warn("dump called improperly ("
+                . $called_from[1] . ' [' . $called_from[2]
+                . "]): USAGE: Erik::dump(title => \\\%var);\n");
         }
     }
 
@@ -863,3 +866,6 @@ Version 2.02
 
 Version 2.03
   Erik Tank - 2016/01/06 - added Erik::warn(); another alias for sanity
+
+Version 2.04
+  Erik Tank - 2016/01/27 - fix warning on improper dump usage so it tells you where you misused it.
