@@ -208,7 +208,7 @@ sub dump {
             $name = 'No Name Provided';
         }
         else {
-            my @called_from = caller(1);
+            my @called_from = caller;
             warn("dump called improperly ("
                 . $called_from[1] . ' [' . $called_from[2]
                 . "]): USAGE: Erik::dump(title => \\\%var);\n");
