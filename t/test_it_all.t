@@ -420,4 +420,18 @@ ERIK];
     "Dump a variable padded with ERIK"
 );
 
+eval { Erik::dump_setting() };
+is(
+    $@,
+    "No method provided to dump_setting\n",
+    'dump_setting without any args'
+);
+
+eval { Erik::dump_setting('Pad') };
+is(
+    $@,
+    "No value provided to dump_setting for Pad\n",
+    'dump_setting with only a method name'
+);
+
 done_testing();
