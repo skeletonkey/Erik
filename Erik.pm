@@ -172,6 +172,34 @@ sub stack_trace_limit {
     return $_settings{_stack_trace_limit};
 }
 
+=head2 dump_setting
+
+=over 4
+
+=item Description
+
+ Erik::dump_setting(Indent => 1);
+ Erik::dump_setting(Pad => 'ERIK');
+
+Set any of the config/method variable that are available.
+
+See Data::Dumper man page.
+
+=back
+
+=cut
+sub dump_setting {
+    my $method = shift || die("No method provided to dump_setting\n");
+    my $value  = shift || die("No value provided to dump_setting for $method\n");
+
+    require Data::Dumper;
+
+    {
+        no strict;
+        ${"Data::Dumper::$method"} = $value;
+    }
+}
+
 =head2 dump
 
 =over 4
@@ -869,3 +897,6 @@ Version 2.03
 
 Version 2.04
   Erik Tank - 2016/01/27 - fix warning on improper dump usage so it tells you where you misused it.
+
+Version 2.05
+  Erik Tank - 2016/03/02 - added the ability to set all of Data::Dumper's settings

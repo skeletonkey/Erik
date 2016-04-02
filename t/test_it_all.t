@@ -381,5 +381,43 @@ is(
     "warn works"
 );
 
+$x = [
+    1,
+    { 2 => 'two' },
+    3,
+];
+Erik::dump_setting(Indent => 1);
+Erik::dump($x);
+is(
+    $temp_var,
+q+*** No Name Provided ***********************************************************
+$VAR1 = [
+  1,
+  {
+    '2' => 'two'
+  },
+  3
+];
+*** END: No Name Provided ******************************************************
++,
+    "Dump a variable with Indent of 1"
+);
+
+Erik::dump_setting(Pad => 'ERIK');
+Erik::dump($x);
+is(
+    $temp_var,
+q+*** No Name Provided ***********************************************************
+ERIK$VAR1 = [
+ERIK  1,
+ERIK  {
+ERIK    '2' => 'two'
+ERIK  },
+ERIK  3
+ERIK];
+*** END: No Name Provided ******************************************************
++,
+    "Dump a variable padded with ERIK"
+);
 
 done_testing();
