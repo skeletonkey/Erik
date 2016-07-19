@@ -100,9 +100,18 @@ my %_default_settings = %_settings;
 
 my $log_filename       = '/tmp/erik.out';
 my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
+my %_subroutine_report = ();
 
 END {
   print("\n") if $_settings{_min_mode};
+
+  if (keys %_subroutine_report) {
+    my $report = "\nSubroutine Call Report\n**********************\n";
+    $report .= sprintf("%10d :: %s\n", $_subroutine_report{$_}, $_)
+      for sort {$a cmp $b} keys %_subroutine_report;
+    $report .= "\n";
+    _print($report);
+  }
 }
 
 =head1 METHODS
@@ -414,6 +423,7 @@ sub subroutine {
 
   @data = caller 1;
   my ($subroutine) = $data[3] =~ /([^:]+)$/;
+  $_subroutine_report{$subroutine}++;
   $string .= $subroutine;
   
   _print(_header($string));
@@ -903,3 +913,6 @@ Version 2.04
 
 Version 2.05
   Erik Tank - 2016/03/02 - added the ability to set all of Data::Dumper's settings
+
+Version 2.06
+  Erik Tank - 2016/07/19 - added the method's called summary report
