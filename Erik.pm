@@ -621,8 +621,11 @@ sub _noticable {
   return '*'x3 . " $string " . '*'x(75 - length($string)) . "\n";
 }
 
+# Bad name - inspired by The IT Crowd - Season 2 Episode 1
+#                        "I'm Disabled" - Roy
 sub _im_disabled {
     my $disabled = 1;
+    return $disabled if $ENV{ERIK_DISABLE};
 
     if (exists $class_restrictions{none}) {
         if ($_settings{state} == 1) {
@@ -652,7 +655,7 @@ sub _im_disabled {
 }
 
 sub _print {
-  return if _im_disabled() || $ENV{ERIK_DISABLE};
+  return if _im_disabled();
 
   if ($_settings{_min_mode} && (caller(1))[3] ne 'Erik::min') {
     $_settings{_min_mode} = 0;
