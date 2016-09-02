@@ -259,9 +259,9 @@ sub dump {
     $max_depth = $max_depth_label if $max_depth_label =~ /^\d+$/;
 
     require Data::Dumper;
-    $Data::Dumper::Maxdepth = $max_depth if $max_depth;
+    Erik::dump_setting(Maxdepth => $max_depth) if $max_depth;
     my $dump = Data::Dumper->Dump([$var]);
-    $Data::Dumper::Maxdepth = 0          if $max_depth;
+    Erik::dump_setting(Maxdepth => 0) if $max_depth; # reset so it doesn't effect the next call
 
   _print(_header($name) . $dump . _header("END: $name"));
 }
