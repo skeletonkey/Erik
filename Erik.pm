@@ -259,6 +259,7 @@ sub dump {
     $max_depth = $max_depth_label if $max_depth_label =~ /^\d+$/;
 
     require Data::Dumper;
+    Erik::dump_setting(Sortkeys => 1);
     Erik::dump_setting(Maxdepth => $max_depth) if $max_depth;
     my $dump = Data::Dumper->Dump([$var]);
     Erik::dump_setting(Maxdepth => 0) if $max_depth; # reset so it doesn't effect the next call
