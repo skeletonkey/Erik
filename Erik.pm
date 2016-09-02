@@ -918,3 +918,6 @@ Version 2.05
 
 Version 2.06
   Erik Tank - 2016/07/19 - added the method's called summary report
+
+Version 2.07
+  Erik Tank - 2016/09/02 - bug fix and sort Dumper's keys
