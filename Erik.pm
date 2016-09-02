@@ -199,7 +199,8 @@ See Data::Dumper man page.
 =cut
 sub dump_setting {
     my $method = shift || die("No method provided to dump_setting\n");
-    my $value  = shift || die("No value provided to dump_setting for $method\n");
+    my $value  = shift;
+    die("No value provided to dump_setting for $method\n") unless defined $value;
 
     require Data::Dumper;
 
