@@ -357,6 +357,10 @@ Simply print a line with the following format:
 sub sanity {
   my $string = shift;
   my @data = caller;
+  my $stack_level = 1;
+  while ($data[0] eq 'Erik') {
+      @data = caller $stack_level++;
+  }
   _print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
 }
 
