@@ -546,6 +546,34 @@ sub enable  {
     $_settings{state} = 1;
 }
 
+=head2 evaluate
+
+=over 4
+
+=item Description
+
+ Erik::evaluate(sub { $line_of_code });
+
+If you believe that something is going wrong, but somewhere the error is being
+thrown away this method attempts to show you that errror first.
+
+It will most likely disrupt the running of the rest of your script, but if you
+are resorting to using it then your script is already crippled.
+
+=back
+
+=cut
+sub evaluate {
+    my $sub = shift;
+    eval { &$sub; };
+    if ($@) {
+        sanity("Eval produced error: $@");
+    }
+    else {
+        sanity("no errors during eval");
+    }
+}
+
 =head2 single_off
 
 =over 4
@@ -921,3 +949,6 @@ Version 2.06
 
 Version 2.07
   Erik Tank - 2016/09/02 - bug fix and sort Dumper's keys
+
+Version 2.08
+  Erik Tank - 2016/09/20 - added evaluate method
