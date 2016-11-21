@@ -298,7 +298,7 @@ sub dump {
     my $dump = Data::Dumper->Dump([$var]);
 
     Erik::dump_setting(Maxdepth => (exists $_settings{_rc_settings}{Maxdepth} ? $_settings{_rc_settings}{Maxdepth} : 0))
-      if $max_depth; # reset so it doesn't effect the next call
+      if defined $max_depth; # reset so it doesn't effect the next call
 
   _print(_header($name) . $dump . _header("END: $name"));
 }
