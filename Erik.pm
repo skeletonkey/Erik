@@ -76,20 +76,20 @@ In an attempt to keep Erik light weight the config needs to be in a data
 structure that can be eval'ed.
 
 Example:
-{
-    # any settings in the import method can be set
-    on   => 1,
-    log  => 1,
-    mode => 'text',
-    # Setting for Data::Dumper: https://metacpan.org/pod/Data::Dumper#Configuration-Variables-or-Methods
-    # These will be only applied if Erik::dump is used
-    dumper => {
-        Indent   => 2,
-        Maxdepth => 3,
-        Purity   => 1,
-        Sortkeys => 1,
+
+    {
+        # any settings in the import method can be set
+        on   => 1,
+        log  => 1,
+        mode => 'text',
+        # Setting for Data::Dumper: https://metacpan.org/pod/Data::Dumper#Configuration-Variables-or-Methods
+        # These will be only applied if Erik::dump is used
+        dumper => {
+            Indent   => 2,
+            Maxdepth => 3,
+            Sortkeys => 1,
+        }
     }
-}
 
 =head1 USAGE
 
@@ -148,6 +148,7 @@ END {
 
 =item Description
 
+ Erik::stack_trace_limit(9999); # known bug - without this line stack_trace will not print
  Erik::stack_trace();
  Erik::stack_trace(1);
  Erik::stack_trace(5);
