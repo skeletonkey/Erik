@@ -1009,3 +1009,6 @@ Version 2.08
 
 Version 2.09
   Erik Tank - 2016/11/18 - add use of .erikrc
+
+Version 2.10
+  Erik Tank - 2016/11/21 - minor bug fixes
