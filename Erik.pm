@@ -65,6 +65,32 @@ Totally disables Erik's print method so nothing will show up.
 
 =back
 
+=head1 .erikrc
+
+If .erikrc is found in your home directory ($ENV{HOME}/.erikrc).  It will be
+loaded and those setting will be applied.
+
+NOTE: settings are overwritten by what you specify while using Erik.
+
+In an attempt to keep Erik light weight the config needs to be in a data
+structure that can be eval'ed.
+
+Example:
+{
+    # any settings in the import method can be set
+    on   => 1,
+    log  => 1,
+    mode => 'text',
+    # Setting for Data::Dumper: https://metacpan.org/pod/Data::Dumper#Configuration-Variables-or-Methods
+    # These will be only applied if Erik::dump is used
+    dumper => {
+        Indent   => 2,
+        Maxdepth => 3,
+        Purity   => 1,
+        Sortkeys => 1,
+    }
+}
+
 =head1 USAGE
 
  use Erik qw(off html);
@@ -198,9 +224,14 @@ See Data::Dumper man page.
 
 =cut
 sub dump_setting {
-    my $method = shift || die("No method provided to dump_setting\n");
-    my $value  = shift;
+    my $method   = shift || die("No method provided to dump_setting\n");
+    my $value    = shift;
+    my $internal = shift || 0; # internal use so that setting max depth isn't permanent
+
     die("No value provided to dump_setting for $method\n") unless defined $value;
+
+    delete $_settings{_rc_settings}{dumper}{$method}
+        if exists $_settings{_rc_settings}{dumper}{$method} && !$internal;
 
     require Data::Dumper;
 
@@ -259,10 +290,15 @@ sub dump {
     $max_depth = $max_depth_label if $max_depth_label =~ /^\d+$/;
 
     require Data::Dumper;
-    Erik::dump_setting(Sortkeys => 1);
-    Erik::dump_setting(Maxdepth => $max_depth) if $max_depth;
+
+    Erik::dump_setting($_, $_settings{_rc_settings}{dumper}{$_}, 1)
+      for keys %{$_settings{_rc_settings}{dumper}};
+    Erik::dump_setting(Maxdepth => $max_depth, 1) if defined $max_depth;
+
     my $dump = Data::Dumper->Dump([$var]);
-    Erik::dump_setting(Maxdepth => 0) if $max_depth; # reset so it doesn't effect the next call
+
+    Erik::dump_setting(Maxdepth => (exists $_settings{_rc_settings}{Maxdepth} ? $_settings{_rc_settings}{Maxdepth} : 0))
+      if $max_depth; # reset so it doesn't effect the next call
 
   _print(_header($name) . $dump . _header("END: $name"));
 }
@@ -431,7 +467,7 @@ sub subroutine {
   my ($subroutine) = $data[3] =~ /([^:]+)$/;
   $_subroutine_report{$subroutine}++;
   $string .= $subroutine;
-  
+
   _print(_header($string));
 }
 
@@ -788,6 +824,21 @@ sub _reset_settings {
 
 sub import {
   shift;
+
+  my $rc_file = $ENV{HOME} . '/.erikrc';
+  if (-e $rc_file) {
+    unless ($_settings{_rc_settings} = do $rc_file) {
+      warn "couldn't parse $rc_file: $@\n" if $@;
+      warn "couldn't do $rc_file: $!\n"    unless defined $_settings{_rc_settings};
+      warn "couldn't run $rc_file\n"       unless $_settings{_rc_settings};
+    }
+
+    foreach my $setting (keys %{$_settings{_rc_settings}}) {
+      next if $setting eq 'dumper';
+        print "\tprocessing setting: $setting\n";
+      $_settings{$setting} = $_settings{_rc_settings}{$setting};
+    }
+  }
   foreach (@_) {
     $_settings{mode}   = 'html', next if /^html$/i;
     $_settings{mode}   = 'text', next if /^text$/i;
@@ -827,7 +878,7 @@ sub _html_friendly {
   $string =~ s/  /&nbsp;&nbsp;/g;
   $string =~ s/>/&gt;/g;
   $string =~ s/</&lt;/g;
-  
+
   $string =~ s/\n/<BR>/g;
 
   return $string;
@@ -956,3 +1007,6 @@ Version 2.07
 
 Version 2.08
   Erik Tank - 2016/09/20 - added evaluate method
+
+Version 2.09
+  Erik Tank - 2016/11/18 - add use of .erikrc

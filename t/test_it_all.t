@@ -42,7 +42,7 @@ foreach my $key (keys %setting_tests) {
     Erik->import($key);
     cmp_deeply(
         Erik::_get_settings(),
-        {%default_settings, %{$setting_tests{$key}}},
+        superhashof({%default_settings, %{$setting_tests{$key}}}),
         "Trying: $key"
     );
 }
