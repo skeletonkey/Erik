@@ -835,7 +835,6 @@ sub import {
 
     foreach my $setting (keys %{$_settings{_rc_settings}}) {
       next if $setting eq 'dumper';
-        print "\tprocessing setting: $setting\n";
       $_settings{$setting} = $_settings{_rc_settings}{$setting};
     }
   }
