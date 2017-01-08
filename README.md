@@ -20,6 +20,7 @@ When calling several variables can be passed in:
     - text - Content-type: text/plain\\n\\n
     - html - Content-type: text/html\\n\\n
 
+- line - print line/program info before all non sanity outputs
 - log - print everything to a log file (/home/erik/erik.out)
 
     This is hardcoded for ease of use.  To change this update the $log\_filename variable.
@@ -27,8 +28,11 @@ When calling several variables can be passed in:
     This will also force the mode into text.  Passing 'html' will not work - it'll be ignored.
 
 - logger - use Log::Log4perl to write all information as 'debug'
-- line - print line/program info before all non sanity outputs
 - pid - print Process ID to each line
+- report - print report when process is done
+
+    Currently, this is just a summary of the methods that were called with a count.
+
 - stderr - print everything to STDERR instead of STDOUT
 
 # ENVIRONMENTAL VARIABLE

@@ -33,6 +33,8 @@ The header printed depends on what mode it is in:
 
 =back
 
+=item line - print line/program info before all non sanity outputs
+
 =item log - print everything to a log file (/home/erik/erik.out)
 
 This is hardcoded for ease of use.  To change this update the $log_filename variable.
@@ -41,9 +43,11 @@ This will also force the mode into text.  Passing 'html' will not work - it'll b
 
 =item logger - use Log::Log4perl to write all information as 'debug'
 
-=item line - print line/program info before all non sanity outputs
-
 =item pid - print Process ID to each line
+
+=item report - print report when process is done
+
+Currently, this is just a summary of the methods that were called with a count.
 
 =item stderr - print everything to STDERR instead of STDOUT
 
