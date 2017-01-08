@@ -110,13 +110,14 @@ Example:
 =cut
 
 my %_settings = (
-  mode   => 0, # text|html
-  state  => 1, # 1 - on, 0 - off, -1 - single command off
   line   => 0, # 1 - auto print line/program info before most prints
-  stderr => 0, # 1 - print everything to STDERR else to STDOUT
   log    => 0, # 1 - print evertyhing to /home/erik/erik.out
   logger => 0, # 1 - send prints also to Log::Log4perl's logger
+  mode   => 0, # text|html
   pid    => 0, # 1 - print the process id and order id
+  report => 0, # 1 - print a general report when done - right now just a method call count
+  state  => 1, # 1 - on, 0 - off, -1 - single command off
+  stderr => 0, # 1 - print everything to STDERR else to STDOUT
 
   _header_printed    => 1, # since only printed once a value of 0 means print
   _logger            => undef, # only get the Log::Log4perl's logger once
@@ -131,7 +132,7 @@ my %_subroutine_report = ();
 END {
   print("\n") if $_settings{_min_mode};
 
-  if (keys %_subroutine_report) {
+  if (keys %_subroutine_report && $_settings{report}) {
     my $report = "\nSubroutine Call Report\n**********************\n";
     $report .= sprintf("%10d :: %s\n", $_subroutine_report{$_}, $_)
       for sort {$a cmp $b} keys %_subroutine_report;
@@ -840,14 +841,15 @@ sub import {
     }
   }
   foreach (@_) {
+    $_settings{line}   = 1,      next if /^line$/i;
+    $_settings{logger} = 1,      next if /^logger$/i;
+    $_settings{log}    = 1,      next if /^log$/i;
     $_settings{mode}   = 'html', next if /^html$/i;
     $_settings{mode}   = 'text', next if /^text$/i;
-    $_settings{line}   = 1,      next if /^line$/i;
-    $_settings{log}    = 1,      next if /^log$/i;
-    $_settings{logger} = 1,      next if /^logger$/i;
+    $_settings{pid}    = 1,      next if /^pid$/i;
+    $_settings{report} = 1,      next if /^report$/i;
     $_settings{state}  = 0,      next if /^off$/i;
     $_settings{stderr} = 1,      next if /^stderr$/i;
-    $_settings{pid}    = 1,      next if /^pid$/i;
 
     $_settings{_header_printed} = 0, next if /^force_html_header$/i;
   }
@@ -1013,3 +1015,6 @@ Version 2.09
 
 Version 2.10
   Erik Tank - 2016/11/21 - minor bug fixes
+
+Version 2.11
+  Erik Tank - 2017/01/08 - only show summary report if using 'report' during import (also added POD)
