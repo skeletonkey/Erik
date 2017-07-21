@@ -27,10 +27,9 @@ public class Erik {
     public static void log(String data) { print(data, 3); }
     public static void print(String data) { print(data, 3); }
     private static void print(String data, Integer frameOffset) {
-        if (printEnabled) {
-            StackTraceElement frame = Thread.currentThread().getStackTrace()[frameOffset];
-            System.out.println(frame.getClassName() + " -- " + frame.getLineNumber() + ": " + data);
-        }
+        StackTraceElement frame = Thread.currentThread().getStackTrace()[frameOffset];
+        say(frame.getClassName() + " -- " + frame.getLineNumber() + ": " + data);
+    }
     }
 
     public static void say(String data) {
