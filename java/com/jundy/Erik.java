@@ -18,8 +18,8 @@ public class Erik {
                 sb.append(x);
             }
         }
-        print(label + ":data: " + sb, frameOffset);
-        print(label + ":string: " + new String(data), frameOffset);
+        print(label + " :data: " + sb, frameOffset);
+        print(label + " :string: " + new String(data), frameOffset);
     }
 
 
