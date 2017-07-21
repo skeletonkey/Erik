@@ -41,6 +41,16 @@ public class Erik {
             System.out.println(data);
         }
     }
+
+    public static void stackTrace() {
+        print("Start Stack Trace", 3);
+        // Skip the first 2 because it's 1st the stacktrace code and 2nd the Erik code
+        for (int i = 2; i < Thread.currentThread().getStackTrace().length; i++) {
+            say(Thread.currentThread().getStackTrace()[i].toString());
+        }
+        print("End Stack Trace", 3);
+
+    }
 }
 
 
