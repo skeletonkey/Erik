@@ -30,6 +30,10 @@ public class Erik {
         StackTraceElement frame = Thread.currentThread().getStackTrace()[frameOffset];
         say(frame.getClassName() + " -- " + frame.getLineNumber() + ": " + data);
     }
+
+    public static void method() {
+        StackTraceElement frame = Thread.currentThread().getStackTrace()[2];
+        say(frame.getClassName() + " -> " + frame.getMethodName());
     }
 
     public static void say(String data) {
