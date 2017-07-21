@@ -59,4 +59,6 @@ Version info:
     Why list the version in the file itself?  So it's easier to see if you are current and I'm too lazy to do it any other way.
 20170411 - First check in
 
+0.02 - 2017-07-21 - add 'method' and 'stackTrace' methods
+
  */
