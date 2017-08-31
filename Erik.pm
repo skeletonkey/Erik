@@ -71,8 +71,8 @@ Totally disables Erik's print method so nothing will show up.
 
 =head1 .erikrc
 
-If .erikrc is found in your home directory ($ENV{HOME}/.erikrc).  It will be
-loaded and those setting will be applied.
+If .erikrc is found in your home directory ($ENV{HOME}/.erikrc, /etc/.erikrc).
+The first one found will be loaded and those setting will be applied.
 
 NOTE: settings are overwritten by what you specify while using Erik.
 
@@ -828,11 +828,19 @@ sub _reset_settings {
     %_settings = %_default_settings;
 }
 
+# first check in the home directory then try in the /etc directory
+sub _get_rc_file {
+    my $file = '/.erikrc';
+
+    return $ENV{HOME} . $file if exists $ENV{HOME} && -e $ENV{HOME} . $file;
+    return "/etc$file" if -e "/etc$file";
+    return undef;
+}
+
 sub import {
   shift;
 
-  my $rc_file = $ENV{HOME} . '/.erikrc';
-  if (-e $rc_file) {
+  if (my $rc_file = _get_rc_file()) {
     unless ($_settings{_rc_settings} = do $rc_file) {
       warn "couldn't parse $rc_file: $@\n" if $@;
       warn "couldn't do $rc_file: $!\n"    unless defined $_settings{_rc_settings};
@@ -1022,3 +1030,6 @@ Version 2.10
 
 Version 2.11
   Erik Tank - 2017/01/08 - only show summary report if using 'report' during import (also added POD)
+
+Version 2.12
+  Erik Tank - 2017/08/31 - add /etc/.erikrc for systems where you don't know or have access to the process' home directory
