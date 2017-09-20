@@ -398,6 +398,7 @@ Simply print a line with the following format:
 =cut
 sub sanity {
   my $string = shift;
+  chomp($string);
   my @data = caller;
   my $stack_level = 1;
   while ($data[0] eq 'Erik') {
