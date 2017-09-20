@@ -778,6 +778,8 @@ sub _print {
     $output = _html_friendly($output) if $_settings{mode} eq 'html';
 
     if ($_settings{logger}) {
+        require Log::Log4perl;
+
         $_settings{_logger} ||= Log::Log4perl->get_logger;
 
         $_settings{_logger}->debug($output);
