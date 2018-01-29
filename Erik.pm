@@ -15,12 +15,6 @@ When calling several variables can be passed in:
 
 =over 4
 
-=item text|html - the expected output format - Default: text
-
-If neither is provided then it will attempt to guess by checking %ENV for any keys starting with HTTP_.
-
-=item on|off - initial state of debugging output on/off - Default: on
-
 =item force_html_header - print an HTML style header as soon as possible
 
 The header printed depends on what mode it is in:
@@ -43,6 +37,8 @@ This will also force the mode into text.  Passing 'html' will not work - it'll b
 
 =item logger - use Log::Log4perl to write all information as 'debug'
 
+=item on|off - initial state of debugging output on/off - Default: on
+
 =item pid - print Process ID to each line
 
 =item report - print report when process is done
@@ -50,6 +46,10 @@ This will also force the mode into text.  Passing 'html' will not work - it'll b
 Currently, this is just a summary of the methods that were called with a count.
 
 =item stderr - print everything to STDERR instead of STDOUT
+
+=item text|html - the expected output format - Default: text
+
+If neither is provided then it will attempt to guess by checking %ENV for any keys starting with HTTP_.
 
 =back
 
@@ -764,38 +764,38 @@ sub _print {
     $_settings{_header_printed} = 1;
   }
 
-    my $output = join("\n", @_);
+  my $output = join("\n", @_);
 
-    if ($_settings{line} && (caller(1))[3] ne 'Erik::sanity') {
-        my @data = caller(1);
-        $output = _header("$data[1] [$data[2]]") . $output;
-    }
+  if ($_settings{line} && (caller(1))[3] ne 'Erik::sanity') {
+    my @data = caller(1);
+    $output = _header("$data[1] [$data[2]]") . $output;
+  }
 
-    if ($_settings{pid}) {
-        $output = "[$$." . ++$_settings{pid_counters}{$$} . '] ' . $output;
-    }
+  if ($_settings{pid}) {
+    $output = "[$$." . ++$_settings{pid_counters}{$$} . '] ' . $output;
+  }
 
-    $output = _html_friendly($output) if $_settings{mode} eq 'html';
+  $output = _html_friendly($output) if $_settings{mode} eq 'html';
 
-    if ($_settings{logger}) {
-        require Log::Log4perl;
+  if ($_settings{logger}) {
+    require Log::Log4perl;
 
-        $_settings{_logger} ||= Log::Log4perl->get_logger;
+    $_settings{_logger} ||= Log::Log4perl->get_logger;
 
-        $_settings{_logger}->debug($output);
-    }
+    $_settings{_logger}->debug($output);
+  }
 
-    if ($_settings{stderr}) {
-        print(STDERR $output);
-    }
-    elsif ($_settings{log}) {
-        open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
-        print(LOG $output);
-        close(LOG);
-    }
-    else {
-        print($output);
-    }
+  if ($_settings{stderr}) {
+    print(STDERR $output);
+  }
+  elsif ($_settings{log}) {
+    open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
+    print(LOG $output);
+    close(LOG);
+  }
+  else {
+    print($output);
+  }
 }
 
 sub _get_header {
