@@ -8,11 +8,7 @@ Quick methods for debugging.
 
 When calling several variables can be passed in:
 
-- text|html - the expected output format - Default: text
-
-    If neither is provided then it will attempt to guess by checking %ENV for any keys starting with HTTP\_.
-
-- on|off - initial state of debugging output on/off - Default: on
+- epoch - pre-pend log lines with the epoch timestamp
 - force\_html\_header - print an HTML style header as soon as possible
 
     The header printed depends on what mode it is in:
@@ -28,12 +24,19 @@ When calling several variables can be passed in:
     This will also force the mode into text.  Passing 'html' will not work - it'll be ignored.
 
 - logger - use Log::Log4perl to write all information as 'debug'
+- on|off - initial state of debugging output on/off - Default: on
 - pid - print Process ID to each line
 - report - print report when process is done
 
     Currently, this is just a summary of the methods that were called with a count.
 
 - stderr - print everything to STDERR instead of STDOUT
+- text|html - the expected output format - Default: text
+
+    If neither is provided then it will attempt to guess by checking %ENV for any keys starting with HTTP\_.
+
+- time - pre-pend log lines with a human readable timestamp
+- time\_stats - pre-pend log lines with timing stats: seconds since last log line - seconds since start of program
 
 # ENVIRONMENTAL VARIABLE
 
@@ -49,8 +52,8 @@ When calling several variables can be passed in:
 
 # .erikrc
 
-If .erikrc is found in your home directory ($ENV{HOME}/.erikrc).  It will be
-loaded and those setting will be applied.
+If .erikrc is found in your home directory ($ENV{HOME}/.erikrc, /etc/.erikrc).
+The first one found will be loaded and those setting will be applied.
 
 NOTE: settings are overwritten by what you specify while using Erik.
 
