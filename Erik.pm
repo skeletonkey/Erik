@@ -15,6 +15,8 @@ When calling several variables can be passed in:
 
 =over 4
 
+=item epoch - pre-pend log lines with the epoch timestamp
+
 =item force_html_header - print an HTML style header as soon as possible
 
 The header printed depends on what mode it is in:
@@ -50,6 +52,10 @@ Currently, this is just a summary of the methods that were called with a count.
 =item text|html - the expected output format - Default: text
 
 If neither is provided then it will attempt to guess by checking %ENV for any keys starting with HTTP_.
+
+=item time - pre-pend log lines with a human readable timestamp
+
+=item time_stats - pre-pend log lines with timing stats: seconds since last log line - seconds since start of program
 
 =back
 
@@ -126,6 +132,8 @@ my %_settings = (
   _header_printed    => 1, # since only printed once a value of 0 means print
   _logger            => undef, # only get the Log::Log4perl's logger once
   _stack_trace_limit => 1, # num of stack traces to print out from a given subroutine - use stack_trace_limit to change this
+  _time_last         => time,
+  _time_start        => time,
 );
 my %_default_settings = %_settings;
 
@@ -775,6 +783,20 @@ sub _print {
     $output = "[$$." . ++$_settings{pid_counters}{$$} . '] ' . $output;
   }
 
+  my $time_current = time;
+  my $total_time = $time_current - $_settings{_time_start};
+  my $diff_time  = $time_current - $_settings{_time_last};
+  $_settings{_time_last} = $time_current;
+  if ($_settings{epoch} || $_settings{time}) {
+    $time_current = localtime if $_settings{time};
+    $time_current .= " - $diff_time - $total_time" if $_settings{time_stats};
+
+    $output = "[$time_current] " . $output;
+  }
+  elsif ($_settings{time_stats}) {
+    $output = "[$diff_time - $total_time] " . $output;
+  }
+
   $output = _html_friendly($output) if $_settings{mode} eq 'html';
 
   if ($_settings{logger}) {
@@ -856,6 +878,7 @@ sub import {
     }
   }
   foreach (@_) {
+    $_settings{epoch}  = 1,      next if /^epoch$/i;
     $_settings{line}   = 1,      next if /^line$/i;
     $_settings{logger} = 1,      next if /^logger$/i;
     $_settings{log}    = 1,      next if /^log$/i;
@@ -865,6 +888,8 @@ sub import {
     $_settings{report} = 1,      next if /^report$/i;
     $_settings{state}  = 0,      next if /^off$/i;
     $_settings{stderr} = 1,      next if /^stderr$/i;
+    $_settings{time}   = 1,      next if /^time$/i;
+    $_settings{time_stats} = 1,  next if /^time_stats$/i;
 
     $_settings{_header_printed} = 0, next if /^force_html_header$/i;
   }
@@ -1036,3 +1061,6 @@ Version 2.11
 
 Version 2.12
   Erik Tank - 2017/08/31 - add /etc/.erikrc for systems where you don't know or have access to the process' home directory
+
+Version 2.13
+  Erik Tank - 2018/01/29 - added epoch, time, and time_stats to show timing information
