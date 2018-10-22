@@ -131,6 +131,7 @@ my %_settings = (
 
   _header_printed    => 1, # since only printed once a value of 0 means print
   _logger            => undef, # only get the Log::Log4perl's logger once
+  _publish_separator => ' :: ', # separator used by the publish method
   _stack_trace_limit => 1, # num of stack traces to print out from a given subroutine - use stack_trace_limit to change this
   _time_last         => time,
   _time_start        => time,
@@ -700,6 +701,70 @@ sub print_file {
     _print(_header("END: $filename"));
 }
 
+=head2 append
+
+=over 4
+
+=item Description
+
+  Erik::append("First piece of info");
+
+Adds information to an internal store that will get printed with the 'publish' method.
+
+Each piece of information will be seperate by 'publish_seperator'.
+
+=back
+
+=cut
+sub append {
+    my $string = shift || return '';
+    push(@{$_settings{_publish}}, $string);
+}
+
+=head2 publish
+
+=over 4
+
+=item Description
+
+  Erik::publish("Optional last message");
+
+Prints out everything that has been 'append'ed.
+
+It will then reset the internal store.
+
+Each piece of information will be seperate by 'publish_seperator'.
+
+=back
+
+=cut
+sub publish {
+    my $string = shift || '';
+    append($string);
+    sanity(join($_settings{_publish_separator}, @{$_settings{_publish}}));
+    delete $_settings{_publish};
+}
+
+=head2 publish_separator
+
+=over 4
+
+=item Description
+
+  Erik::publish_separator("|");
+
+Set the separator that 'publish' will use when printing everything out.
+
+Default: ' :: ';
+
+=back
+
+=cut
+sub publish_separator {
+    my $separator = shift || return '';
+    $_settings{_publish_separator} = $separator;
+}
+
 sub _is_defined {
   my $var = shift;
   $var = '[UNDEF]' unless defined($var);
@@ -1064,3 +1129,6 @@ Version 2.12
 
 Version 2.13
   Erik Tank - 2018/01/29 - added epoch, time, and time_stats to show timing information
+
+Version 2.14
+  Erik Tank - 2018/10/22 - added append and publish ability

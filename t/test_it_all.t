@@ -434,4 +434,48 @@ is(
     'dump_setting with only a method name'
 );
 
+Erik::append("Foo");
+Erik::publish();
+is(
+    $temp_var,
+    "*** t/test_it_all.t [438]: Foo *************************************************\n",
+    "Single Append"
+);
+
+Erik::append("Bar");
+Erik::publish();
+is(
+    $temp_var,
+    "*** t/test_it_all.t [446]: Bar *************************************************\n",
+    "Second Single Append"
+);
+
+Erik::append("Foo");
+Erik::append("Bar");
+Erik::publish();
+is(
+    $temp_var,
+    "*** t/test_it_all.t [455]: Foo :: Bar ******************************************\n",
+    "Multiple Append"
+);
+
+Erik::append("Foo");
+Erik::append("Bar");
+Erik::publish("Final");
+is(
+    $temp_var,
+    "*** t/test_it_all.t [464]: Foo :: Bar :: Final *********************************\n",
+    "Append with publish"
+);
+
+Erik::publish_separator('|');
+Erik::append("Foo");
+Erik::append("Bar");
+Erik::publish("Final");
+is(
+    $temp_var,
+    "*** t/test_it_all.t [474]: Foo|Bar|Final ***************************************\n",
+    "Different separator"
+);
+
 done_testing();
