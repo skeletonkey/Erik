@@ -29,6 +29,8 @@ The header printed depends on what mode it is in:
 
 =back
 
+=item disable_header - if set the no information is printed that identifies the starting a new logging session
+
 =item line - print line/program info before all non sanity outputs
 
 =item log - print everything to a log file (/home/erik/erik.out)
@@ -955,6 +957,7 @@ sub import {
     $_settings{stderr} = 1,      next if /^stderr$/i;
     $_settings{time}   = 1,      next if /^time$/i;
     $_settings{time_stats} = 1,  next if /^time_stats$/i;
+    $_settings{disable_header}=1,next if /^disable_header$/i;
 
     $_settings{_header_printed} = 0, next if /^force_html_header$/i;
   }
@@ -977,6 +980,7 @@ sub import {
   $_settings{_min_mode} = 0;
 
   $_settings{state} = 0 if $ENV{ERIK_OFF};
+  $_settings{_header_printed} = 1 if $_settings{disable_header};
 }
 
 sub _html_friendly {
@@ -1132,3 +1136,6 @@ Version 2.13
 
 Version 2.14
   Erik Tank - 2018/10/22 - added append and publish ability
+
+Version 2.15
+  Erik Tank - 2018/10/25 - added 'disable_header' setting
