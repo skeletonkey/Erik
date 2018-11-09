@@ -5,11 +5,11 @@ no warnings;
 
 =head1 NAME
 
-Erik - Erik's debugging methods
+Erik - Erik's debugging buddy
 
 =head1 Description
 
-Quick methods for debugging.
+Quick methods for debugging Perl.
 
 When calling several variables can be passed in:
 
@@ -329,8 +329,9 @@ sub dump {
 
  Erik::module_location();
  Erik::module_location('carp');
+ Erik::module_location('ssl');
 
- An alias for Erik::module_location(). See module_location documentation.
+ Will print out all loaded modules (that match case-insensitive to the provided string) and the locations of their code.
 
 =back
 
@@ -1139,3 +1140,6 @@ Version 2.14
 
 Version 2.15
   Erik Tank - 2018/10/25 - added 'disable_header' setting
+
+Version 2.15.1
+  Erik Tank - 2018/11/09 - update POD for module_location and other small changes
