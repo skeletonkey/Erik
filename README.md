@@ -17,7 +17,7 @@ When calling several variables can be passed in:
     - html - Content-type: text/html\\n\\n
 
 - line - print line/program info before all non sanity outputs
-- log - print everything to a log file (/home/erik/erik.out)
+- log - print everything to a log file (/tmp/erik.out)
 
     This is hardcoded for ease of use.  To change this update the $log\_filename variable.
 

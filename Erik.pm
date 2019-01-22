@@ -33,7 +33,7 @@ The header printed depends on what mode it is in:
 
 =item line - print line/program info before all non sanity outputs
 
-=item log - print everything to a log file (/home/erik/erik.out)
+=item log - print everything to a log file (/tmp/erik.out)
 
 This is hardcoded for ease of use.  To change this update the $log_filename variable.
 
@@ -123,7 +123,7 @@ Example:
 
 my %_settings = (
   line   => 0, # 1 - auto print line/program info before most prints
-  log    => 0, # 1 - print evertyhing to /home/erik/erik.out
+  log    => 0, # 1 - print evertyhing to /tmp/erik.out
   logger => 0, # 1 - send prints also to Log::Log4perl's logger
   mode   => 0, # text|html
   pid    => 0, # 1 - print the process id and order id
