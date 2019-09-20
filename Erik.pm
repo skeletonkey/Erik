@@ -663,14 +663,18 @@ Enter 1 or more new lines to help break up the output
 
 =cut
 sub spacer {
-  my $count = shift || 1;
+    my $count = shift || 1;
 
-  {
+    my $tmp_line = $_settings{line};
+    my $tmp_pid  = $_settings{pid};
+
     $_settings{line} = 0;
     $_settings{pid} = 0;
 
     _print("\n" x $count);
-  }
+
+    $_settings{line} = $tmp_line;
+    $_settings{pid}  = $tmp_pid;
 }
 
 =head2 print_file
@@ -1143,3 +1147,6 @@ Version 2.15
 
 Version 2.15.1
   Erik Tank - 2018/11/09 - update POD for module_location and other small changes
+
+Version 2.16
+  Erik Tank - 2019/09/20 - call to spacer was wiping out line and pid settings
