@@ -1,10 +1,10 @@
 # NAME
 
-Erik - Erik's debugging methods
+Erik - Erik's debugging buddy
 
 # Description
 
-Quick methods for debugging.
+Quick methods for debugging Perl.
 
 When calling several variables can be passed in:
 
@@ -16,12 +16,21 @@ When calling several variables can be passed in:
     - text - Content-type: text/plain\\n\\n
     - html - Content-type: text/html\\n\\n
 
+- disable\_header - if set the no information is printed that identifies the starting a new logging session
 - line - print line/program info before all non sanity outputs
-- log - print everything to a log file (/tmp/erik.out)
+- log - print everything to a log file
 
-    This is hardcoded for ease of use.  To change this update the $log\_filename variable.
+    By default this is /tmp/erik.out.  The output can be configured using the 'log\_filename' arg.
 
     This will also force the mode into text.  Passing 'html' will not work - it'll be ignored.
+
+- log\_filename - name of the file that logs will be printed to
+
+    This argument takes the form: log\_filename=/tmp/output\_file\_name
+
+    Everything after the '=' will be used as the filename.  It his HIGHLY RECOMMENDED that this is ALWAYS a full path.
+
+    No guarantee is made for partial or relative paths!
 
 - logger - use Log::Log4perl to write all information as 'debug'
 - on|off - initial state of debugging output on/off - Default: on
@@ -155,8 +164,9 @@ Example:
 
         Erik::module_location();
         Erik::module_location('carp');
+        Erik::module_location('ssl');
 
-        An alias for Erik::module_location(). See module_location documentation.
+        Will print out all loaded modules (that match case-insensitive to the provided string) and the locations of their code.
 
 ## yell
 
@@ -302,6 +312,38 @@ Example:
         Erik::print_file($filename);
 
     Print out the content of the file.
+
+## append
+
+- Description
+
+        Erik::append("First piece of info");
+
+    Adds information to an internal store that will get printed with the 'publish' method.
+
+    Each piece of information will be seperate by 'publish\_seperator'.
+
+## publish
+
+- Description
+
+        Erik::publish("Optional last message");
+
+    Prints out everything that has been 'append'ed.
+
+    It will then reset the internal store.
+
+    Each piece of information will be seperate by 'publish\_seperator'.
+
+## publish\_separator
+
+- Description
+
+        Erik::publish_separator("|");
+
+    Set the separator that 'publish' will use when printing everything out.
+
+    Default: ' :: ';
 
 # DEPENDENCIES
 

@@ -33,11 +33,19 @@ The header printed depends on what mode it is in:
 
 =item line - print line/program info before all non sanity outputs
 
-=item log - print everything to a log file (/tmp/erik.out)
+=item log - print everything to a log file
 
-This is hardcoded for ease of use.  To change this update the $log_filename variable.
+By default this is /tmp/erik.out.  The output can be configured using the 'log_filename' arg.
 
 This will also force the mode into text.  Passing 'html' will not work - it'll be ignored.
+
+=item log_filename - name of the file that logs will be printed to
+
+This argument takes the form: log_filename=/tmp/output_file_name
+
+Everything after the '=' will be used as the filename.  It his HIGHLY RECOMMENDED that this is ALWAYS a full path.
+
+No guarantee is made for partial or relative paths!
 
 =item logger - use Log::Log4perl to write all information as 'debug'
 
@@ -122,14 +130,15 @@ Example:
 =cut
 
 my %_settings = (
-  line   => 0, # 1 - auto print line/program info before most prints
-  log    => 0, # 1 - print evertyhing to /tmp/erik.out
-  logger => 0, # 1 - send prints also to Log::Log4perl's logger
-  mode   => 0, # text|html
-  pid    => 0, # 1 - print the process id and order id
-  report => 0, # 1 - print a general report when done - right now just a method call count
-  state  => 1, # 1 - on, 0 - off, -1 - single command off
-  stderr => 0, # 1 - print everything to STDERR else to STDOUT
+  line         => 0, # 1 - auto print line/program info before most prints
+  log          => 0, # 1 - print everything to /tmp/erik.out (or what is set by log_filename)
+  logger       => 0, # 1 - send prints also to Log::Log4perl's logger
+  log_filename => '/tmp/erik.out', # location of log output
+  mode         => 0, # text|html
+  pid          => 0, # 1 - print the process id and order id
+  report       => 0, # 1 - print a general report when done - right now just a method call count
+  state        => 1, # 1 - on, 0 - off, -1 - single command off
+  stderr       => 0, # 1 - print everything to STDERR else to STDOUT
 
   _header_printed    => 1, # since only printed once a value of 0 means print
   _logger            => undef, # only get the Log::Log4perl's logger once
@@ -140,7 +149,6 @@ my %_settings = (
 );
 my %_default_settings = %_settings;
 
-my $log_filename       = '/tmp/erik.out';
 my %class_restrictions = ( none => 1 ); # if enable/disable called for specific name spaces
 my %_subroutine_report = ();
 
@@ -834,7 +842,7 @@ sub _print {
       print(STDERR _get_header());
     }
     elsif ($_settings{log}) {
-      open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
+      open(LOG, '>>', $_settings{log_filename}) || die("Can't open file ($_settings{log_filename}): $!\n");
       print(LOG _get_header());
       close(LOG);
     }
@@ -883,7 +891,7 @@ sub _print {
     print(STDERR $output);
   }
   elsif ($_settings{log}) {
-    open(LOG, ">>$log_filename") || die("Can't open file ($log_filename): $!\n");
+    open(LOG, '>>', $_settings{log_filename}) || die("Can't open file ($_settings{log_filename}): $!\n");
     print(LOG $output);
     close(LOG);
   }
@@ -965,6 +973,11 @@ sub import {
     $_settings{disable_header}=1,next if /^disable_header$/i;
 
     $_settings{_header_printed} = 0, next if /^force_html_header$/i;
+
+    if (/^log_filename=(.+)$/) {
+      $_settings{log_filename} = $1;
+      next;
+    }
   }
 
   if (!$_settings{mode}) {
@@ -1150,3 +1163,6 @@ Version 2.15.1
 
 Version 2.16
   Erik Tank - 2019/09/20 - call to spacer was wiping out line and pid settings
+
+Version 2.17
+  Erik Tank - 2019/12/17 - added the ability to change the log output file with log_filename arg
