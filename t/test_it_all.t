@@ -478,4 +478,44 @@ is(
     "Different separator"
 );
 
+foreach my $i (1..9) {
+    Erik::counter();
+    is(
+        $temp_var,
+        "*** t/test_it_all.t [482]: Counter: $i ******************************************\n",
+        "Unnamed counter - $i"
+    );
+}
+
+Erik::counter('a');
+is(
+    $temp_var,
+    "*** t/test_it_all.t [490]: a: 1 ************************************************\n",
+    "Counter a - 1"
+);
+Erik::counter('a');
+is(
+    $temp_var,
+    "*** t/test_it_all.t [496]: a: 2 ************************************************\n",
+    "Counter a - 2"
+);
+Erik::counter('b');
+is(
+    $temp_var,
+    "*** t/test_it_all.t [502]: b: 1 ************************************************\n",
+    "Counter b - 1"
+);
+Erik::counter('a');
+is(
+    $temp_var,
+    "*** t/test_it_all.t [508]: a: 3 ************************************************\n",
+    "Counter a - 3"
+);
+Erik::counter('b');
+is(
+    $temp_var,
+    "*** t/test_it_all.t [514]: b: 2 ************************************************\n",
+    "Counter b - 2"
+);
+
 done_testing();

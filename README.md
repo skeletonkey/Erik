@@ -127,6 +127,21 @@ Example:
 
     Default is set to 1 so that you don't get a ton of output if a subroutine is called mulitple times.
 
+## counter
+
+- Description
+
+        Erik::counter();
+        Erik::counter('My Counter');
+
+    Print out a counter that is incremented by one each time.
+
+    If a name is provided then it will increment and print every time it sees that name.
+
+    If no name is provided then a name will be constructed off of the file name and line number.  This insuring a correct print each time.
+
+    All counters start at 1.
+
 ## dump\_setting
 
 - Description

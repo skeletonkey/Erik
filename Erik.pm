@@ -232,6 +232,40 @@ sub stack_trace_limit {
     return $_settings{_stack_trace_limit};
 }
 
+=head2 counter
+
+=over 4
+
+=item Description
+
+ Erik::counter();
+ Erik::counter('My Counter');
+
+Print out a counter that is incremented by one each time.
+
+If a name is provided then it will increment and print every time it sees that name.
+
+If no name is provided then a name will be constructed from the file name and line number.
+
+All counters start at 1.
+
+=back
+
+=cut
+my %_counters;
+sub counter {
+    my $name = shift || '';
+    my $display_name = $name;
+
+    if (!$name) {
+        $display_name = 'Counter';
+        my @called_from = caller;
+        $name = $called_from[1] . '--' . $called_from[2];
+    };
+    sanity("$display_name: " . ++$_counters{$name});
+
+}
+
 =head2 dump_setting
 
 =over 4
@@ -1166,3 +1200,6 @@ Version 2.16
 
 Version 2.17
   Erik Tank - 2019/12/17 - added the ability to change the log output file with log_filename arg
+
+Version 2.18
+  Erik Tank - 2019/12/18 - added  the counter method
