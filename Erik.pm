@@ -3,7 +3,7 @@ package Erik;
 use strict;
 no warnings;
 
-=head1 NAME
+=head1 Name
 
 Erik - Erik's debugging buddy
 
@@ -11,13 +11,61 @@ Erik - Erik's debugging buddy
 
 Quick methods for debugging Perl.
 
-When calling several variables can be passed in:
+Why use my name???  I found the I've never used my name as a variable; therefore I could create safe guards to make sure the 'Erik::' never makes it into production.  It should go without saying that debugging code (thus the Erik 'module') should never be found in production.
+
+Erik has been designed to only require Perl.  However, if you use the 'dump' subroutine or specify 'logger' in the require statement supporting modules are loaded.
+
+=head2 Caveat Emptor
+
+Erik was originally developed to troubleshoot a CGI script; hence the text|html flag. It attempts to guess if you are in browser and behave accordingly.  It's been a long time since I've used Erik in this manner. If you're trying to use it in browser and it no longer works please let me know.
+
+=head1 Usage
+
+ use Erik qw(off html);
+
+ Erik::dump('name', $ref_to_dump); # uses Data::Dumper;
+
+ Erik::log();          # output: file_name [line_num]
+ Erik::log('message'); # output: file_name [line_num]: message
+
+ Erik::stack_trace(); # full blow stack trace telling you how you got there
+
+ Erik::vars('name', $name); # just prints out that variable
+ Erik::vars({ name1 => $name1, name2 => $name2 }); # print one line sep by tabs
+
+ Erik::module_location(); # sometime you just need to know they are in the right place
+
+ Erik::append("a");
+ Erik::append("b");
+ Erik::append("b");
+ Erik::publish();  # output: a :: b :: b
+
+ # compact output for loops
+ Erik::min($_) for 1..100; # output: 1, 2, 3, 4, 5, ..., 100
+
+ Erik::spacer(5); # add 5 lines of blank space - if you need some space
+
+ Erik::print_file('file_name'); # if you need to see what is in the file right now
+
+ sub some_method {
+   Erik::method(); # output: file_name [line_num]: some_method
+ }
+
+=head1 Require Flags
+
+When requiring Erik several variables can be passed in.
+
+Unless specified the default value is off/false.
 
 =over 4
 
-=item epoch - pre-pend log lines with the epoch timestamp
+=item epoch
 
-=item force_html_header - print an HTML style header as soon as possible
+pre-pend log lines with the epoch timestamp
+
+=item force_html_header
+
+Print an HTML style header as soon as possible.
 
 The header printed depends on what mode it is in:
 
@@ -29,47 +77,77 @@ The header printed depends on what mode it is in:
 
 =back
 
-=item disable_header - if set the no information is printed that identifies the starting a new logging session
+=item disable_header
 
-=item line - print line/program info before all non sanity outputs
+When Erik starts a new 'session' it will print a 'New Log' header.  This can be disabled by setting 'disable_header' to true.
 
-=item log - print everything to a log file
+NOTE: This has nothing to do with the 'force_html_header' flag.
 
-By default this is /tmp/erik.out.  The output can be configured using the 'log_filename' arg.
+=item line
+
+print line/program info before all non 'log' outputs
+
+=item log
+
+print everything to a log file
+
+By default this is /tmp/erik.out.  The output can be configured using the 'log_filename' setting.
 
 This will also force the mode into text.  Passing 'html' will not work - it'll be ignored.
 
-=item log_filename - name of the file that logs will be printed to
+=item log_filename
+
+name of the file that logs will be printed to
 
 This argument takes the form: log_filename=/tmp/output_file_name
 
-Everything after the '=' will be used as the filename.  It his HIGHLY RECOMMENDED that this is ALWAYS a full path.
+Everything after the '=' will be used as the filename.  It is HIGHLY RECOMMENDED to ALWAYS use a full path.
 
 No guarantee is made for partial or relative paths!
 
-=item logger - use Log::Log4perl to write all information as 'debug'
+=item logger
 
-=item on|off - initial state of debugging output on/off - Default: on
+use Log::Log4perl to write all information as 'debug'
 
-=item pid - print Process ID to each line
+=item on|off
 
-=item report - print report when process is done
+initial state of debugging output on/off - Default: on
+
+=item pid
+
+print Process ID to each line
+
+=item report
+
+print report when process is done
 
 Currently, this is just a summary of the methods that were called with a count.
 
-=item stderr - print everything to STDERR instead of STDOUT
+NOTE: only subroutine where Erik::method is called are included.
 
-=item text|html - the expected output format - Default: text
+=item stderr
+
+print everything to STDERR instead of STDOUT
+
+=item text|html
+
+the expected output format - Default: text
 
 If neither is provided then it will attempt to guess by checking %ENV for any keys starting with HTTP_.
 
-=item time - pre-pend log lines with a human readable timestamp
+=item time
 
-=item time_stats - pre-pend log lines with timing stats: seconds since last log line - seconds since start of program
+pre-pend log lines with a human readable timestamp
+
+=item time_stats
+
+pre-pend log lines with timing stats: seconds since last log line - seconds since start of program
+
+This is not a replacement for benchmarking.  It is a simple way to try to find sections of the code that take a long time to execute.
 
 =back
 
-=head1 ENVIRONMENTAL VARIABLE
+=head1 Environmental Variables
 
 =over 4
 
@@ -88,7 +166,7 @@ Totally disables Erik's print method so nothing will show up.
 =head1 .erikrc
 
 If .erikrc is found in your home directory ($ENV{HOME}/.erikrc, /etc/.erikrc).
-The first one found will be loaded and those setting will be applied.
+The first one found will be loaded and those settings will be applied.
 
 NOTE: settings are overwritten by what you specify while using Erik.
 
@@ -110,22 +188,6 @@ Example:
             Sortkeys => 1,
         }
     }
-
-=head1 USAGE
-
- use Erik qw(off html);
-
- Erik::dump('name', $ref_to_dump); # uses Data::Dumper;
-
- Erik::info('Just something to display');
-
- Erik::sanity();          # output: file_name [line_num]
- Erik::sanity('message'); # output: file_name [line_num]: message
-
- Erik::stack_trace(); # full blow stack trace telling you how you got there
-
- Erik::vars('name', $name); # just prints out that variable
- Erik::vars({ name1 => $name1, name2 => $name2 }); # print one line sep by tabs
 
 =cut
 
@@ -165,6 +227,475 @@ END {
 }
 
 =head1 METHODS
+
+=head2 append
+
+=over 4
+
+=item Description
+
+  Erik::append("First piece of info");
+
+Adds information to an internal store that will get printed with the 'publish' method.
+
+Each piece of information will be seperate by 'publish_seperator'.
+
+=back
+
+=cut
+sub append {
+    my $string = shift || return '';
+    push(@{$_settings{_publish}}, $string);
+}
+
+=head2 counter
+
+=over 4
+
+=item Description
+
+ Erik::counter();
+ Erik::counter('My Counter');
+
+Print out a counter that is incremented by one each time.
+
+If a name is provided then it will increment and print every time it sees that name.
+
+If no name is provided then a name will be constructed from the file name and line number.
+
+All counters start at 1.
+
+=back
+
+=cut
+my %_counters;
+sub counter {
+    my $name = shift || '';
+    my $display_name = $name;
+
+    if (!$name) {
+        $display_name = 'Counter';
+        my @called_from = caller;
+        $name = $called_from[1] . '--' . $called_from[2];
+    };
+    &log("$display_name: " . ++$_counters{$name});
+
+}
+
+=head2 disable
+
+=over 4
+
+=item Description
+
+ Erik::disable();
+ Erik::disable('Module::Name::A', 'Module::Name::B');
+
+Turn off the debugger.
+
+If a list of modules name(s) is provided then only disable debugging in those. Calling it again without a list will disable debugging everywhere.
+
+=back
+
+=cut
+sub disable {
+    my @modules = @_;
+
+    if (@modules) {
+        %class_restrictions = ( disable => \@modules );
+    }
+    else {
+        %class_restrictions = ( none    => 1         );
+    }
+
+    $_settings{state} = 0;
+}
+
+=head2 dump
+
+=over 4
+
+=item Description
+
+ Erik::dump('name', $ref_to_dump);
+ Erik::dump(name => $ref_to_dump);
+ Erik::dump(name => $ref_to_dump, maxdepth => 3);
+ Erik::dump(name => $ref_to_dump, 3);
+ Erik::dump($ref_to_dump);
+ Erik::dump($ref_to_dump, maxdepth => 3); # WILL NOT WORK!!!!!!!!!!!!!!!!
+ Erik::dump($ref_to_dump, 3);             # WILL NOT WORK!!!!!!!!!!!!!!!!
+
+This will 'dump' the content of the variable reference that is passed.  The name is simply what is displayed above and below it.
+
+It will attempt to use Data::Dumper.  If it is not installed then it just blows up.
+
+maxdepth (or a simple number as the 3rd arg) will limit the depth of the dump.  (Used to set $Data::Dumper::Maxdepth)  No argument or 0 assumes unlimited.
+
+If you only provide a reference to a variable it will dump that out.  There is no ability to set maxdepth with this.  Infact, using maxdepth at that point will not work!!!!
+
+=back
+
+=cut
+sub dump {
+    my $name = shift;
+    my $var  = shift;
+
+    if (!defined $var) {
+        if (ref $name) {
+            $var  = $name;
+            $name = 'No Name Provided';
+        }
+        else {
+            my @called_from = caller;
+            warn("dump called improperly ("
+                . $called_from[1] . ' [' . $called_from[2]
+                . "]): USAGE: Erik::dump(title => \\\%var);\n");
+        }
+    }
+
+    my $max_depth_label = shift;
+    my $max_depth       = shift;
+
+    $max_depth = $max_depth_label if $max_depth_label =~ /^\d+$/;
+
+    require Data::Dumper;
+
+    Erik::dump_setting($_, $_settings{_rc_settings}{dumper}{$_}, 1)
+      for keys %{$_settings{_rc_settings}{dumper}};
+    Erik::dump_setting(Maxdepth => $max_depth, 1) if defined $max_depth;
+
+    my $dump = Data::Dumper->Dump([$var]);
+
+    Erik::dump_setting(Maxdepth => (exists $_settings{_rc_settings}{Maxdepth} ? $_settings{_rc_settings}{Maxdepth} : 0))
+      if defined $max_depth; # reset so it doesn't effect the next call
+
+  _print(_header($name) . $dump . _header("END: $name"));
+}
+
+=head2 dump_setting
+
+=over 4
+
+=item Description
+
+ Erik::dump_setting(Indent => 1);
+ Erik::dump_setting(Pad => 'ERIK');
+
+Set any of the config/method variable that are available.
+
+See Data::Dumper man page.
+
+=back
+
+=cut
+sub dump_setting {
+    my $method   = shift || die("No method provided to dump_setting\n");
+    my $value    = shift;
+    my $internal = shift || 0; # internal use so that setting max depth isn't permanent
+
+    die("No value provided to dump_setting for $method\n") unless defined $value;
+
+    delete $_settings{_rc_settings}{dumper}{$method}
+        if exists $_settings{_rc_settings}{dumper}{$method} && !$internal;
+
+    require Data::Dumper;
+
+    {
+        no strict;
+        ${"Data::Dumper::$method"} = $value;
+    }
+}
+
+=head2 enable
+
+=over 4
+
+=item Description
+
+ Erik::enable();
+ Erik::enable('Module::Name::A', 'Module::Name::B');
+
+Toggles the on state of the debugger.
+
+If a list of modules name(s) is provided then only enable debugging in those. Calling it again without a list will enable debugging everywhere.
+
+=back
+
+=cut
+sub enable  {
+    my @modules = @_;
+
+    if (@modules) {
+        %class_restrictions = ( enable => \@modules );
+    }
+    else {
+        %class_restrictions = ( none   => 1         );
+    }
+
+    $_settings{state} = 1;
+}
+
+=head2 evaluate
+
+=over 4
+
+=item Description
+
+ Erik::evaluate(sub { $line_of_code });
+
+If you believe that something is going wrong, but somewhere the error is being
+thrown away this method attempts to show you that errror first.
+
+It will most likely disrupt the running of the rest of your script, but if you
+are resorting to using it then your script is already crippled.
+
+=back
+
+=cut
+sub evaluate {
+    my $sub = shift;
+    eval { &$sub; };
+    if ($@) {
+        log("Eval produced error: $@");
+    }
+    else {
+        log("no errors during eval");
+    }
+}
+
+=head2 log
+
+=over 4
+
+=item Description
+
+ Erik::log();
+ Erik::log('message');
+
+Simply print a line with the following format:
+*** file_name [line_num]: message if provided *********************************
+
+=back
+
+=cut
+sub log {
+  my $string = shift;
+  chomp($string);
+  my @data = caller;
+  # need to get out of the Erik namespace to find the line that we are really talking about
+  my $stack_level = 1;
+  while ($data[0] eq 'Erik') {
+      @data = caller $stack_level++;
+  }
+  _print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
+}
+
+
+=head2 method
+
+=over 4
+
+=item Description
+
+ Erik::method();
+
+Simply print a line with the following format:
+*** file_name [line_num]: Subroutine_Name **************************************
+
+also adds the method to the method report
+
+=back
+
+=cut
+sub method {
+  my @data = caller;
+  my $string = "$data[1] [$data[2]]: ";
+
+  @data = caller 1;
+  my ($subroutine) = $data[3] =~ /([^:]+)$/;
+  $_subroutine_report{$subroutine}++;
+  $string .= $subroutine;
+
+  _print(_header($string));
+}
+
+=head2 min
+
+=over 4
+
+=item Description
+
+ Erik::min('message');
+
+A compact way of printing things out.  Ideally used in a loop so that you don't
+burn through the scrollback buffer.
+
+=back
+
+=cut
+sub min {
+  my $string = shift;
+
+  if ($_settings{_min_mode}) {
+    $string = ", $string";
+  }
+  else {
+    $_settings{_min_mode} = 1;
+  }
+
+  _print($string);
+}
+
+=head2 module_location
+
+=over 4
+
+=item Description
+
+
+ Erik::module_location();
+ Erik::module_location('carp');
+ Erik::module_location('ssl');
+
+ Will print out all loaded modules (that match case-insensitive to the provided string) and the locations of their code.
+
+=back
+
+=cut
+sub module_location {
+    my $search_arg = shift || '';
+
+    my $name = 'Module Location';
+    _print(_header($name));
+    my $found = 0;
+    KEY: foreach my $key (sort {uc($a) cmp uc($b)} keys %INC) {
+        next KEY if $search_arg && $key !~ /$search_arg/i;
+        _print($key . ' => ' . $INC{$key} . "\n");
+        $found = 1;
+    }
+    _print("Search arg ($search_arg) no found in \%INC\n") unless $found;
+    _print(_header("END: $name"));
+
+}
+
+=head2 print_file
+
+=over 4
+
+=item Description
+
+ Erik::print_file($filename);
+
+Print out the content of the file.
+
+=back
+
+=cut
+sub print_file {
+    my $filename = shift;
+    die("$filename does not exists") unless -e $filename;
+    die("$filename is not a file") unless -f $filename;
+
+    my $contents;
+    open(my $fh, '<', $filename) || die("Unable to open $filename for read: $!\n");
+    {
+        $/ = undef;
+        $contents = <$fh>;
+    }
+    close($fh);
+
+    _print(_header("BEGIN: $filename"));
+    _print($contents);
+    _print(_header("END: $filename"));
+}
+
+=head2 publish
+
+=over 4
+
+=item Description
+
+  Erik::publish("Optional last message");
+
+Prints out everything that has been 'append'ed.
+
+It will then reset the internal store.
+
+Each piece of information will be seperate by 'publish_seperator'.
+
+=back
+
+=cut
+sub publish {
+    my $string = shift || '';
+    append($string);
+    &log(join($_settings{_publish_separator}, @{$_settings{_publish}}));
+    delete $_settings{_publish};
+}
+
+=head2 publish_separator
+
+=over 4
+
+=item Description
+
+  Erik::publish_separator("|");
+
+Set the separator that 'publish' will use when printing everything out.
+
+Default: ' :: ';
+
+=back
+
+=cut
+sub publish_separator {
+    my $separator = shift || return '';
+    $_settings{_publish_separator} = $separator;
+}
+
+=head2 single_off
+
+=over 4
+
+=item Description
+
+ Erik::single_off();
+
+Turns off debugging for the next command then it's turned back on again.  If debugging is off already then it does nothing.
+
+=back
+
+=cut
+sub single_off { $_settings{state} = -1 if $_settings{state}; }
+
+=head2 spacer
+
+=over 4
+
+=item Description
+
+ Erik::spacer;
+ Erik::spacer(3);
+
+Enter 1 or more new lines to help break up the output
+
+=back
+
+=cut
+sub spacer {
+    my $count = shift || 1;
+
+    my $tmp_line = $_settings{line};
+    my $tmp_pid  = $_settings{pid};
+
+    $_settings{line} = 0;
+    $_settings{pid} = 0;
+
+    _print("\n" x $count);
+
+    $_settings{line} = $tmp_line;
+    $_settings{pid}  = $tmp_pid;
+}
 
 =head2 stack_trace
 
@@ -232,185 +763,20 @@ sub stack_trace_limit {
     return $_settings{_stack_trace_limit};
 }
 
-=head2 counter
+=head2 toggle
 
 =over 4
 
 =item Description
 
- Erik::counter();
- Erik::counter('My Counter');
+ Erik::toggle();
 
-Print out a counter that is incremented by one each time.
-
-If a name is provided then it will increment and print every time it sees that name.
-
-If no name is provided then a name will be constructed from the file name and line number.
-
-All counters start at 1.
+Toggles the enable/disable state of the debugger.  If it's off nothing gets printed.
 
 =back
 
 =cut
-my %_counters;
-sub counter {
-    my $name = shift || '';
-    my $display_name = $name;
-
-    if (!$name) {
-        $display_name = 'Counter';
-        my @called_from = caller;
-        $name = $called_from[1] . '--' . $called_from[2];
-    };
-    sanity("$display_name: " . ++$_counters{$name});
-
-}
-
-=head2 dump_setting
-
-=over 4
-
-=item Description
-
- Erik::dump_setting(Indent => 1);
- Erik::dump_setting(Pad => 'ERIK');
-
-Set any of the config/method variable that are available.
-
-See Data::Dumper man page.
-
-=back
-
-=cut
-sub dump_setting {
-    my $method   = shift || die("No method provided to dump_setting\n");
-    my $value    = shift;
-    my $internal = shift || 0; # internal use so that setting max depth isn't permanent
-
-    die("No value provided to dump_setting for $method\n") unless defined $value;
-
-    delete $_settings{_rc_settings}{dumper}{$method}
-        if exists $_settings{_rc_settings}{dumper}{$method} && !$internal;
-
-    require Data::Dumper;
-
-    {
-        no strict;
-        ${"Data::Dumper::$method"} = $value;
-    }
-}
-
-=head2 dump
-
-=over 4
-
-=item Description
-
-
- Erik::dump('name', $ref_to_dump);
- Erik::dump(name => $ref_to_dump);
- Erik::dump(name => $ref_to_dump, maxdepth => 3);
- Erik::dump(name => $ref_to_dump, 3);
- Erik::dump($ref_to_dump);
- Erik::dump($ref_to_dump, maxdepth => 3); # WILL NOT WORK!!!!!!!!!!!!!!!!
- Erik::dump($ref_to_dump, 3);             # WILL NOT WORK!!!!!!!!!!!!!!!!
-
-This will 'dump' the content of the variable reference that is passed.  The name is simply what is displayed above and below it.
-
-It will attempt to use Data::Dumper.  If it is not installed then it just blows up.
-
-maxdepth (or a simple number as the 3rd arg) will limit the depth of the dump.  (Used to set $Data::Dumper::Maxdepth)  No argument or 0 assumes unlimited.
-
-If you only provide a reference to a variable it will dump that out.  There is no ability to set maxdepth with this.  Infact, using maxdepth at that point will not work!!!!
-
-=back
-
-=cut
-sub dump {
-    my $name = shift;
-    my $var  = shift;
-
-    if (!defined $var) {
-        if (ref $name) {
-            $var  = $name;
-            $name = 'No Name Provided';
-        }
-        else {
-            my @called_from = caller;
-            warn("dump called improperly ("
-                . $called_from[1] . ' [' . $called_from[2]
-                . "]): USAGE: Erik::dump(title => \\\%var);\n");
-        }
-    }
-
-    my $max_depth_label = shift;
-    my $max_depth       = shift;
-
-    $max_depth = $max_depth_label if $max_depth_label =~ /^\d+$/;
-
-    require Data::Dumper;
-
-    Erik::dump_setting($_, $_settings{_rc_settings}{dumper}{$_}, 1)
-      for keys %{$_settings{_rc_settings}{dumper}};
-    Erik::dump_setting(Maxdepth => $max_depth, 1) if defined $max_depth;
-
-    my $dump = Data::Dumper->Dump([$var]);
-
-    Erik::dump_setting(Maxdepth => (exists $_settings{_rc_settings}{Maxdepth} ? $_settings{_rc_settings}{Maxdepth} : 0))
-      if defined $max_depth; # reset so it doesn't effect the next call
-
-  _print(_header($name) . $dump . _header("END: $name"));
-}
-
-=head2 module_location
-
-=over 4
-
-=item Description
-
-
- Erik::module_location();
- Erik::module_location('carp');
- Erik::module_location('ssl');
-
- Will print out all loaded modules (that match case-insensitive to the provided string) and the locations of their code.
-
-=back
-
-=cut
-sub module_location {
-    my $search_arg = shift || '';
-
-    my $name = 'Module Location';
-    _print(_header($name));
-    my $found = 0;
-    KEY: foreach my $key (sort {uc($a) cmp uc($b)} keys %INC) {
-        next KEY if $search_arg && $key !~ /$search_arg/i;
-        _print($key . ' => ' . $INC{$key} . "\n");
-        $found = 1;
-    }
-    _print("Search arg ($search_arg) no found in \%INC\n") unless $found;
-    _print(_header("END: $name"));
-
-}
-
-=head2 yell
-
-=over 4
-
-=item Description
-
-
- Erik::yell('Some information to display');
-
-This will print the information between two lines of '*****'s.
-
-=back
-
-=cut
-sub yell {
-  _print('*'x80, shift, '*'x80 . "\n");
-}
+sub toggle { $_settings{state} = !$_settings{state}; }
 
 =head2 vars
 
@@ -435,31 +801,31 @@ sub vars {
     . join("\t", map({"$_: " . _is_defined($args->{$_})} sort {$a cmp $b} keys %$args))));
 }
 
-=head2 sanity
+=head2 yell
 
 =over 4
 
 =item Description
 
- Erik::sanity();
- Erik::sanity('message');
 
-Simply print a line with the following format:
-*** file_name [line_num]: message if provided *********************************
+ Erik::yell('Some information to display');
+
+This will print the information between two lines of '*****'s.
 
 =back
 
 =cut
-sub sanity {
-  my $string = shift;
-  chomp($string);
-  my @data = caller;
-  my $stack_level = 1;
-  while ($data[0] eq 'Erik') {
-      @data = caller $stack_level++;
-  }
-  _print(_header("$data[1] [$data[2]]" . (defined($string) ? ": $string" : '')));
+sub yell {
+  _print('*'x80, shift, '*'x80 . "\n");
 }
+
+=head1 Alias Methods
+
+There are many commands for Erik; these are their aliases.
+
+Over time different method names have been used for the same command per user's requests.
+
+There is no plan on deprecating them; feel free to use these as they suite your mood.
 
 =head2 info
 
@@ -469,42 +835,27 @@ sub sanity {
 
  Erik::info();
 
- An alias for Erik::sanity(). See sanity documentation above.
+ An alias for Erik::log(). See log documentation above.
 
 =back
 
 =cut
-sub info { goto &sanity; }
+sub info { goto &log; }
 
-=head2 log
+=head2 sanity
 
 =over 4
 
 =item Description
 
- Erik::log();
+ Erik::sanity();
 
- An alias for Erik::sanity(). See sanity documentation above.
-
-=back
-
-=cut
-sub log { goto &sanity; }
-
-=head2 warn
-
-=over 4
-
-=item Description
-
- Erik::warn();
-
- An alias for Erik::sanity(). See sanity documentation above.
+ An alias for Erik::log(). See log documentation above.
 
 =back
 
 =cut
-sub warn { goto &sanity; }
+sub sanity { goto &log; }
 
 =head2 subroutine
 
@@ -514,305 +865,27 @@ sub warn { goto &sanity; }
 
  Erik::subroutine();
 
-Simply print a line with the following format:
-*** file_name [line_num]: Subroutine_Name **************************************
+ An alias for Erik::method(). See method documentation above.
 
 =back
 
 =cut
-sub subroutine {
-  my @data = caller;
-  my $string = "$data[1] [$data[2]]: ";
+sub subroutine { goto &method; }
 
-  @data = caller 1;
-  my ($subroutine) = $data[3] =~ /([^:]+)$/;
-  $_subroutine_report{$subroutine}++;
-  $string .= $subroutine;
-
-  _print(_header($string));
-}
-
-=head2 method
+=head2 warn
 
 =over 4
 
 =item Description
 
- Erik::method();
+ Erik::warn();
 
- An alias for Erik::subroutine(). See subroutine documentation above.
-
-=back
-
-=cut
-sub method { goto &subroutine; }
-
-=head2 min
-
-=over 4
-
-=item Description
-
- Erik::min('message');
-
-A compact way of printing things out.  Ideally used in a loop so that you don't
-burn through the scrollback buffer.
+ An alias for Erik::log(). See log documentation above.
 
 =back
 
 =cut
-sub min {
-  my $string = shift;
-
-  if ($_settings{_min_mode}) {
-    $string = ", $string";
-  }
-  else {
-    $_settings{_min_mode} = 1;
-  }
-
-  _print($string);
-}
-
-=head2 toggle
-
-=over 4
-
-=item Description
-
- Erik::toggle();
-
-Toggles the enable/disable state of the debugger.  If it's off nothing gets printed.
-
-=back
-
-=cut
-sub toggle { $_settings{state} = !$_settings{state}; }
-
-=head2 disable
-
-=over 4
-
-=item Description
-
- Erik::disable();
- Erik::disable('Module::Name::A', 'Module::Name::B');
-
-Turn off state of the debugger.
-
-If a list of modules name(s) is provided then only disable debugging in those. Calling it again without a list will disable debugging everywhere.
-
-=back
-
-=cut
-sub disable {
-    my @modules = @_;
-
-    if (@modules) {
-        %class_restrictions = ( disable => \@modules );
-    }
-    else {
-        %class_restrictions = ( none    => 1         );
-    }
-
-    $_settings{state} = 0;
-}
-
-=head2 enable
-
-=over 4
-
-=item Description
-
- Erik::enable();
- Erik::enable('Module::Name::A', 'Module::Name::B');
-
-Toggles the on state of the debugger.
-
-If a list of modules name(s) is provided then only enable debugging in those. Calling it again without a list will enable debugging everywhere.
-
-=back
-
-=cut
-sub enable  {
-    my @modules = @_;
-
-    if (@modules) {
-        %class_restrictions = ( enable => \@modules );
-    }
-    else {
-        %class_restrictions = ( none   => 1         );
-    }
-
-    $_settings{state} = 1;
-}
-
-=head2 evaluate
-
-=over 4
-
-=item Description
-
- Erik::evaluate(sub { $line_of_code });
-
-If you believe that something is going wrong, but somewhere the error is being
-thrown away this method attempts to show you that errror first.
-
-It will most likely disrupt the running of the rest of your script, but if you
-are resorting to using it then your script is already crippled.
-
-=back
-
-=cut
-sub evaluate {
-    my $sub = shift;
-    eval { &$sub; };
-    if ($@) {
-        sanity("Eval produced error: $@");
-    }
-    else {
-        sanity("no errors during eval");
-    }
-}
-
-=head2 single_off
-
-=over 4
-
-=item Description
-
- Erik::single_off();
-
-Turns off debugging for the next command then it's turned back on again.  If debugging is off already then it does nothing.
-
-=back
-
-=cut
-sub single_off { $_settings{state} = -1 if $_settings{state}; }
-
-=head2 spacer
-
-=over 4
-
-=item Description
-
- Erik::spacer;
- Erik::spacer(3);
-
-Enter 1 or more new lines to help break up the output
-
-=back
-
-=cut
-sub spacer {
-    my $count = shift || 1;
-
-    my $tmp_line = $_settings{line};
-    my $tmp_pid  = $_settings{pid};
-
-    $_settings{line} = 0;
-    $_settings{pid} = 0;
-
-    _print("\n" x $count);
-
-    $_settings{line} = $tmp_line;
-    $_settings{pid}  = $tmp_pid;
-}
-
-=head2 print_file
-
-=over 4
-
-=item Description
-
- Erik::print_file($filename);
-
-Print out the content of the file.
-
-=back
-
-=cut
-sub print_file {
-    my $filename = shift;
-    die("$filename does not exists") unless -e $filename;
-    die("$filename is not a file") unless -f $filename;
-
-    my $contents;
-    open(my $fh, '<', $filename) || die("Unable to open $filename for read: $!\n");
-    {
-        $/ = undef;
-        $contents = <$fh>;
-    }
-    close($fh);
-
-    _print(_header("BEGIN: $filename"));
-    _print($contents);
-    _print(_header("END: $filename"));
-}
-
-=head2 append
-
-=over 4
-
-=item Description
-
-  Erik::append("First piece of info");
-
-Adds information to an internal store that will get printed with the 'publish' method.
-
-Each piece of information will be seperate by 'publish_seperator'.
-
-=back
-
-=cut
-sub append {
-    my $string = shift || return '';
-    push(@{$_settings{_publish}}, $string);
-}
-
-=head2 publish
-
-=over 4
-
-=item Description
-
-  Erik::publish("Optional last message");
-
-Prints out everything that has been 'append'ed.
-
-It will then reset the internal store.
-
-Each piece of information will be seperate by 'publish_seperator'.
-
-=back
-
-=cut
-sub publish {
-    my $string = shift || '';
-    append($string);
-    sanity(join($_settings{_publish_separator}, @{$_settings{_publish}}));
-    delete $_settings{_publish};
-}
-
-=head2 publish_separator
-
-=over 4
-
-=item Description
-
-  Erik::publish_separator("|");
-
-Set the separator that 'publish' will use when printing everything out.
-
-Default: ' :: ';
-
-=back
-
-=cut
-sub publish_separator {
-    my $separator = shift || return '';
-    $_settings{_publish_separator} = $separator;
-}
+sub warn { goto &log; }
 
 sub _is_defined {
   my $var = shift;
@@ -888,7 +961,7 @@ sub _print {
 
   my $output = join("\n", @_);
 
-  if ($_settings{line} && (caller(1))[3] ne 'Erik::sanity') {
+  if ($_settings{line} && (caller(1))[3] ne 'Erik::log') {
     my @data = caller(1);
     $output = _header("$data[1] [$data[2]]") . $output;
   }
@@ -1051,15 +1124,16 @@ sub _html_friendly {
 
 __END__
 
-=head1 DEPENDENCIES
+=head1 Dependencies
 
 Data::Dumper - only if Erik::dump() is called
+Log::Log4perl - if 'logger' setting is provided during 'require'
 
-=head1 AUTHOR
+=head1 Author
 
 Erik Tank, tank@jundy.com
 
-=head1 COPYRIGHT AND LICENSE
+=head1 Copyright and License
 
 Copyright (C) 2011 by Erik Tank
 
@@ -1203,3 +1277,6 @@ Version 2.17
 
 Version 2.18
   Erik Tank - 2019/12/18 - added  the counter method
+
+Version 2.18.1
+  Erik Tank - 2021/09/27 - major documentation update and some code moves - no impact on usage
